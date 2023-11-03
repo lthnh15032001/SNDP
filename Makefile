@@ -1,10 +1,11 @@
 NAME=iot-stream
 VERSION=0.0.1
+VERSION_PACKAGE=github.com/lthnh15032001/ngrok-impl/internal/version
 
 .PHONY: build
 build:
 	@echo Building from source....
-	@go build -o ./build/$(NAME)
+	@go build -o ./build/$(NAME) ./cmd
 
 .PHONY: run
 run: build

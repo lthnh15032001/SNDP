@@ -88,3 +88,8 @@ A quick look at the top-level files and directories you'll see in this project.
  
 
 **Configmap template:** You can update the dev.yml file to include your properties. 
+
+
+### Deploy with version 
+
+env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath ${LDFLAGS} ${GCFLAGS} ${ASMFLAGS} -o ${DIR}/iot-stream-v1 .
