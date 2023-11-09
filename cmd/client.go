@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,25 +13,48 @@ import (
 	"iot-stream/share/cos"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 func newClientTCPCommand() *cobra.Command {
-	return &cobra.Command{
+
+	config := &chclient.Config{Headers: http.Header{}}
+	clientCmd := &cobra.Command{
 		Use:           "client",
 		Short:         "Iot Streaming TCP Log - Huda",
 		Long:          "Iot Streaming TCP Log - Huda",
 		SilenceErrors: true,
 		Args:          cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("args", args)
-			client(args)
+			client(args, cmd.Flags(), config)
 		},
 	}
+	clientCmd.Flags().StringVar(&config.Fingerprint, "fingerprint", "", "")
+	clientCmd.Flags().StringVar(&config.Auth, "auth", "", "")
+	clientCmd.Flags().DurationVar(&config.KeepAlive, "keepalive", 25*time.Second, "")
+	clientCmd.Flags().IntVar(&config.MaxRetryCount, "max-retry-count", -1, "")
+	clientCmd.Flags().DurationVar(&config.MaxRetryInterval, "max-retry-interval", 0, "")
+	clientCmd.Flags().StringVar(&config.Proxy, "proxy", "", "")
+	clientCmd.Flags().StringVar(&config.TLS.CA, "tls-ca", "", "")
+	clientCmd.Flags().BoolVar(&config.TLS.SkipVerify, "tls-skip-verify", false, "")
+	clientCmd.Flags().StringVar(&config.TLS.Cert, "tls-cert", "", "")
+	clientCmd.Flags().StringVar(&config.TLS.Key, "tls-key", "", "")
+	clientCmd.Flags().Var(&headerFlags{config.Headers}, "header", "")
 
+	clientCmd.Flags().String("hostname", "", "")
+	clientCmd.Flags().String("sni", "", "")
+	clientCmd.Flags().Bool("pid", false, "")
+	clientCmd.Flags().Bool("v", false, "")
+	return clientCmd
 }
 
 type headerFlags struct {
 	http.Header
+}
+
+// Type implements pflag.Value.
+func (*headerFlags) Type() string {
+	panic("unimplemented")
 }
 
 func (flag *headerFlags) String() string {
@@ -63,28 +85,13 @@ func generatePidFile() {
 		log.Fatal(err)
 	}
 }
-func client(args []string) {
-	flags := flag.NewFlagSet("client", flag.ContinueOnError)
-	config := chclient.Config{Headers: http.Header{}}
-	flags.StringVar(&config.Fingerprint, "fingerprint", "", "")
-	flags.StringVar(&config.Auth, "auth", "", "")
-	flags.DurationVar(&config.KeepAlive, "keepalive", 25*time.Second, "")
-	flags.IntVar(&config.MaxRetryCount, "max-retry-count", -1, "")
-	flags.DurationVar(&config.MaxRetryInterval, "max-retry-interval", 0, "")
-	flags.StringVar(&config.Proxy, "proxy", "", "")
-	flags.StringVar(&config.TLS.CA, "tls-ca", "", "")
-	flags.BoolVar(&config.TLS.SkipVerify, "tls-skip-verify", false, "")
-	flags.StringVar(&config.TLS.Cert, "tls-cert", "", "")
-	flags.StringVar(&config.TLS.Key, "tls-key", "", "")
-	flags.Var(&headerFlags{config.Headers}, "header", "")
-	hostname := flags.String("hostname", "", "")
-	sni := flags.String("sni", "", "")
-	pid := flags.Bool("pid", false, "")
-	verbose := flags.Bool("v", false, "")
-	// flags.Usage = func() {
-	// 	fmt.Print(clientHelp)
-	// 	os.Exit(0)
-	// }
+func client(args []string, flags *pflag.FlagSet, config *chclient.Config) {
+
+	hostname := flags.Lookup("hostname").Value.String()
+	sni := flags.Lookup("sni").Value.String()
+	pid := strToBoolean(flags.Lookup("pid").Value.String())
+	// verbose := strToBoolean(flags.Lookup("verbose").Value.String())
+
 	flags.Parse(args)
 	//pull out options, put back remaining args
 	args = flags.Args()
@@ -98,23 +105,23 @@ func client(args []string) {
 		config.Auth = os.Getenv("AUTH")
 	}
 	//move hostname onto headers
-	if *hostname != "" {
-		config.Headers.Set("Host", *hostname)
-		config.TLS.ServerName = *hostname
+	if hostname != "" {
+		config.Headers.Set("Host", hostname)
+		config.TLS.ServerName = hostname
 	}
 
-	if *sni != "" {
-		config.TLS.ServerName = *sni
+	if sni != "" {
+		config.TLS.ServerName = sni
 	}
 
 	//ready
-	c, err := chclient.NewClient(&config)
+	c, err := chclient.NewClient(config)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	c.Debug = *verbose
-	if *pid {
+	c.Debug = true
+	if pid {
 		generatePidFile()
 	}
 	go cos.GoStats()

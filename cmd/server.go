@@ -71,12 +71,9 @@ func (flag multiFlag) Set(arg string) error {
 
 func strToBoolean(str string) bool {
 	boo, err := strconv.ParseBool(str)
-
 	if err != nil {
 		// Handle the error if the conversion fails
 		fmt.Println("Error:", err)
-	} else {
-		fmt.Println("Value of 'boolFlag' as a boolean:")
 	}
 	return boo
 }
@@ -86,7 +83,6 @@ func serverTCP(args []string, flags *pflag.FlagSet, config *chserver.Config) {
 	p := flags.Lookup("p").Value.String()
 	port := flags.Lookup("port").Value.String()
 	pid := strToBoolean(flags.Lookup("pid").Value.String())
-
 	keyGen := flags.Lookup("keygen").Value.String()
 
 	flags.Parse(args)

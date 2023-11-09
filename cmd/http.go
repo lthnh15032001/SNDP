@@ -6,6 +6,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 
+	"github.com/jpillora/requestlog"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +23,7 @@ func newHttpCommand() *cobra.Command {
 
 func httpServe() {
 	// Define the local server to be exposed
-	localServerURL, _ := url.Parse("http://localhost:8080")
+	localServerURL, _ := url.Parse("http://192.168.1.97:9000")
 
 	// Create a reverse proxy
 	proxy := httputil.NewSingleHostReverseProxy(localServerURL)
@@ -33,17 +34,21 @@ func httpServe() {
 		r.URL = localServerURL
 		r.Host = localServerURL.Host
 
-		// Serve the request using the reverse proxy
-		proxy.ServeHTTP(w, r)
 	})
 
 	// Start the proxy server on port 8081
 	go func() {
 		fmt.Println("Proxy server is running on :8081")
-		if err := http.ListenAndServe(":8081", nil); err != nil {
+		if err := http.ListenAndServe("103.191.147.139:8082", requestlog.Wrap(logRequest(proxy))); err != nil {
 			fmt.Println(err)
 		}
 	}()
 
 	select {}
+}
+
+func logRequest(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handler.ServeHTTP(w, r)
+	})
 }

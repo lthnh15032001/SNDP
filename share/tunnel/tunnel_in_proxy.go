@@ -148,5 +148,4 @@ func (p *Proxy) pipeRemote(ctx context.Context, src io.ReadWriteCloser) {
 	//then pipe
 	s, r := cio.Pipe(src, dst)
 	l.Debugf("Close (sent %s received %s)", sizestr.ToString(s), sizestr.ToString(r))
-	l.Debugf("Close (sent %v received %v)", s, r)
 }
