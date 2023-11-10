@@ -1,6 +1,7 @@
 package main
 
 import (
+	iot "iot-stream/cmd/stream"
 	"iot-stream/internal/logging"
 	"iot-stream/internal/signals"
 	"os"
@@ -8,7 +9,7 @@ import (
 
 func main() {
 	ctx := signals.SetupSignalHandler()
-	if err := Execute(ctx); err != nil {
+	if err := iot.Execute(ctx); err != nil {
 		logging.LoggerFromContext(ctx).Error(err)
 		os.Exit(1)
 	}
