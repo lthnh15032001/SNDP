@@ -1,4 +1,4 @@
-module iot-stream
+module github.com/lthnh15032001/ngrok-impl
 
 go 1.17
 

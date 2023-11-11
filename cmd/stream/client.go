@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	chclient "iot-stream/internal/client"
-	"iot-stream/share/cos"
+	chclient "github.com/lthnh15032001/ngrok-impl/internal/client"
+	"github.com/lthnh15032001/ngrok-impl/share/cos"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -81,7 +81,7 @@ func (flag *headerFlags) Set(arg string) error {
 
 func generatePidFile() {
 	pid := []byte(strconv.Itoa(os.Getpid()))
-	if err := os.WriteFile("iot-stream.pid", pid, 0644); err != nil {
+	if err := os.WriteFile("github.com/lthnh15032001/ngrok-impl.pid", pid, 0644); err != nil {
 		log.Fatal(err)
 	}
 }

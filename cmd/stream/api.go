@@ -3,9 +3,10 @@ package iot
 import (
 	"flag"
 	"fmt"
-	"iot-stream/internal/api/config"
-	"iot-stream/internal/api/server"
 	"os"
+
+	"github.com/lthnh15032001/ngrok-impl/internal/api/config"
+	"github.com/lthnh15032001/ngrok-impl/internal/api/server"
 
 	"github.com/spf13/cobra"
 )

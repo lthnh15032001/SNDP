@@ -1,10 +1,11 @@
 package main
 
 import (
-	iot "iot-stream/cmd/stream"
-	"iot-stream/internal/logging"
-	"iot-stream/internal/signals"
 	"os"
+
+	iot "github.com/lthnh15032001/ngrok-impl/cmd/stream"
+	"github.com/lthnh15032001/ngrok-impl/internal/logging"
+	"github.com/lthnh15032001/ngrok-impl/internal/signals"
 )
 
 func main() {

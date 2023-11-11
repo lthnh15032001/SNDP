@@ -6,10 +6,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	chshare "iot-stream/share"
-	"iot-stream/share/cnet"
-	"iot-stream/share/settings"
-	"iot-stream/share/tunnel"
+	chshare "github.com/lthnh15032001/ngrok-impl/share"
+	"github.com/lthnh15032001/ngrok-impl/share/cnet"
+	"github.com/lthnh15032001/ngrok-impl/share/settings"
+	"github.com/lthnh15032001/ngrok-impl/share/tunnel"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"

@@ -6,9 +6,9 @@ import (
 	"net"
 	"strings"
 
-	"iot-stream/share/cio"
-	"iot-stream/share/cnet"
-	"iot-stream/share/settings"
+	"github.com/lthnh15032001/ngrok-impl/share/cio"
+	"github.com/lthnh15032001/ngrok-impl/share/cnet"
+	"github.com/lthnh15032001/ngrok-impl/share/settings"
 
 	"github.com/jpillora/sizestr"
 	"golang.org/x/crypto/ssh"

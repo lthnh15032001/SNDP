@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"iot-stream/share/cio"
+	"github.com/lthnh15032001/ngrok-impl/share/cio"
 
 	"github.com/jpillora/sizestr"
 )

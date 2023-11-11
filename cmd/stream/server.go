@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	chserver "iot-stream/internal/server"
-	"iot-stream/share/ccrypto"
-	"iot-stream/share/cos"
-	"iot-stream/share/settings"
+	chserver "github.com/lthnh15032001/ngrok-impl/internal/server"
+	"github.com/lthnh15032001/ngrok-impl/share/ccrypto"
+	"github.com/lthnh15032001/ngrok-impl/share/cos"
+	"github.com/lthnh15032001/ngrok-impl/share/settings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"

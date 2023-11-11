@@ -1,8 +1,9 @@
 package middlewares
 
 import (
-	"iot-stream/internal/api/config"
 	"strings"
+
+	"github.com/lthnh15032001/ngrok-impl/internal/api/config"
 
 	"github.com/gin-gonic/gin"
 )

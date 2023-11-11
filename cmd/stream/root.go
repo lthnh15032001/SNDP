@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	versionpkg "iot-stream/internal/version"
+	versionpkg "github.com/lthnh15032001/ngrok-impl/internal/version"
 
 	log "github.com/sirupsen/logrus"
 
@@ -23,7 +23,7 @@ var (
 			log.WithFields(log.Fields{
 				"version": version.Version,
 				"commit":  version.GitCommit,
-			}).Info("Starting IOT-Stream")
+			}).Info("Starting github.com/lthnh15032001/ngrok-impl")
 			cmd.HelpFunc()(cmd, args)
 		},
 	}

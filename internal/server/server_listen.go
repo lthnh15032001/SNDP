@@ -9,7 +9,7 @@ import (
 	"os/user"
 	"path/filepath"
 
-	"iot-stream/share/settings"
+	"github.com/lthnh15032001/ngrok-impl/share/settings"
 
 	"golang.org/x/crypto/acme/autocert"
 )

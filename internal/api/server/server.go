@@ -1,8 +1,9 @@
 package server
 
 import (
-	"iot-stream/internal/api/config"
 	"log"
+
+	"github.com/lthnh15032001/ngrok-impl/internal/api/config"
 )
 
 func Init() {

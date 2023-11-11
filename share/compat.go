@@ -3,12 +3,12 @@ package chshare
 //this file exists to maintain backwards compatibility
 
 import (
-	"iot-stream/share/ccrypto"
-	"iot-stream/share/cio"
-	"iot-stream/share/cnet"
-	"iot-stream/share/cos"
-	"iot-stream/share/settings"
-	"iot-stream/share/tunnel"
+	"github.com/lthnh15032001/ngrok-impl/share/ccrypto"
+	"github.com/lthnh15032001/ngrok-impl/share/cio"
+	"github.com/lthnh15032001/ngrok-impl/share/cnet"
+	"github.com/lthnh15032001/ngrok-impl/share/cos"
+	"github.com/lthnh15032001/ngrok-impl/share/settings"
+	"github.com/lthnh15032001/ngrok-impl/share/tunnel"
 )
 
 const (

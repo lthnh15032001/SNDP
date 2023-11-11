@@ -3,9 +3,10 @@
 package tests
 
 import (
-	"iot-stream/internal/api/config"
-	"iot-stream/internal/api/server"
 	"testing"
+
+	"github.com/lthnh15032001/ngrok-impl/internal/api/config"
+	"github.com/lthnh15032001/ngrok-impl/internal/api/server"
 
 	"encoding/json"
 	"net/http"

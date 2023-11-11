@@ -1,4 +1,4 @@
-NAME=iot-stream
+NAME=github.com/lthnh15032001/ngrok-impl
 VERSION=0.0.1
 VERSION_PACKAGE=github.com/lthnh15032001/ngrok-impl/internal/version
 

@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"iot-stream/share/cio"
-	"iot-stream/share/settings"
+	"github.com/lthnh15032001/ngrok-impl/share/cio"
+	"github.com/lthnh15032001/ngrok-impl/share/settings"
 )
 
 func (t *Tunnel) handleUDP(l *cio.Logger, rwc io.ReadWriteCloser, hostPort string) error {

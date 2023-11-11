@@ -92,4 +92,4 @@ A quick look at the top-level files and directories you'll see in this project.
 
 ### Deploy with version 
 
-env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath ${LDFLAGS} ${GCFLAGS} ${ASMFLAGS} -o ${DIR}/iot-stream-v1 .
+env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath ${LDFLAGS} ${GCFLAGS} ${ASMFLAGS} -o ${DIR}/github.com/lthnh15032001/ngrok-impl-v1 .

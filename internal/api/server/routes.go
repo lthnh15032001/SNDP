@@ -1,9 +1,10 @@
 package server
 
 import (
-	"iot-stream/docs"
-	"iot-stream/internal/api/controllers"
 	"net/http"
+
+	"github.com/lthnh15032001/ngrok-impl/docs"
+	"github.com/lthnh15032001/ngrok-impl/internal/api/controllers"
 
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"   // gin-swagger middleware

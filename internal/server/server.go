@@ -11,11 +11,11 @@ import (
 	"regexp"
 	"time"
 
-	chshare "iot-stream/share"
-	"iot-stream/share/ccrypto"
-	"iot-stream/share/cio"
-	"iot-stream/share/cnet"
-	"iot-stream/share/settings"
+	chshare "github.com/lthnh15032001/ngrok-impl/share"
+	"github.com/lthnh15032001/ngrok-impl/share/ccrypto"
+	"github.com/lthnh15032001/ngrok-impl/share/cio"
+	"github.com/lthnh15032001/ngrok-impl/share/cnet"
+	"github.com/lthnh15032001/ngrok-impl/share/settings"
 
 	"github.com/gorilla/websocket"
 	"github.com/jpillora/requestlog"
