@@ -5,6 +5,7 @@ import (
 	"os"
 
 	chclient "github.com/lthnh15032001/ngrok-impl/internal/client"
+	"github.com/lthnh15032001/ngrok-impl/share/cos"
 )
 
 func Client() bool {
@@ -23,14 +24,14 @@ func Client() bool {
 		log.Fatal(err)
 	}
 	c.Debug = true
-	// go cos.GoStats()
-	// ctx := cos.InterruptContext()
-	// if err := c.Start(ctx); err != nil {
-	// 	log.Fatal(err)
-	// }
-	// if err := c.Wait(); err != nil {
-	// 	log.Fatal(err)
-	// }
+	go cos.GoStats()
+	ctx := cos.InterruptContext()
+	if err := c.Start(ctx); err != nil {
+		log.Fatal(err)
+	}
+	if err := c.Wait(); err != nil {
+		log.Fatal(err)
+	}
 	return true
 }
 
