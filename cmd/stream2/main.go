@@ -8,10 +8,10 @@ import (
 	"github.com/lthnh15032001/ngrok-impl/share/cos"
 )
 
-func Client() bool {
+func Client(server string, remote string) bool {
 	config := chclient.Config{}
-	config.Server = "https://tunnel.rogo.com.vn"
-	config.Remotes = []string{"R:localhost:5555"}
+	config.Server = server
+	config.Remotes = []string{remote}
 	//default auth
 	if config.Auth == "" {
 		config.Auth = os.Getenv("AUTH")
