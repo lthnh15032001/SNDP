@@ -24,7 +24,7 @@ func newClientTCPCommand() *cobra.Command {
 		Short:         "Iot Streaming TCP Log - Huda",
 		Long:          "Iot Streaming TCP Log - Huda",
 		SilenceErrors: true,
-		Args:          cobra.ExactArgs(1),
+		Args:          cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
 			client(args, cmd.Flags(), config)
 		},
@@ -98,8 +98,13 @@ func client(args []string, flags *pflag.FlagSet, config *chclient.Config) {
 	if len(args) < 1 {
 		log.Fatalf("At Least one remote is required")
 	}
-	config.Server = "https://tunnel.rogo.com.vn"
-	config.Remotes = args[0:]
+	// config.Server = "https://tunnel.rogo.com.vn"
+	// config.Remotes = args[0:]
+	if len(args) < 2 {
+		log.Fatalf("A server and least one remote is required")
+	}
+	config.Server = args[0]
+	config.Remotes = args[1:]
 	//default auth
 	if config.Auth == "" {
 		config.Auth = os.Getenv("AUTH")
