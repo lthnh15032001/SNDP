@@ -8,7 +8,7 @@ import (
 	"github.com/lthnh15032001/ngrok-impl/share/cos"
 )
 
-func Client(config chclient.Config) {
+func Client(config chclient.Config) bool {
 	config.Server = "https://tunnel.rogo.com.vn"
 	config.Remotes = []string{"R:localhost:5555"}
 	//default auth
@@ -31,6 +31,7 @@ func Client(config chclient.Config) {
 	if err := c.Wait(); err != nil {
 		log.Fatal(err)
 	}
+	return true
 }
 
 func Client2(x float32) float32 {
