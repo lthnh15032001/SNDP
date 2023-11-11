@@ -8,7 +8,7 @@ import (
 	"github.com/lthnh15032001/ngrok-impl/share/cos"
 )
 
-func Client(server string, remote string) bool {
+func Client(server string, remote string) {
 	config := chclient.Config{}
 	config.Server = server
 	config.Remotes = []string{remote}
@@ -32,7 +32,6 @@ func Client(server string, remote string) bool {
 	if err := c.Wait(); err != nil {
 		log.Fatal(err)
 	}
-	return true
 }
 
 func Client2(x float32) float32 {
