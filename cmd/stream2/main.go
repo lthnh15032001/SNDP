@@ -32,3 +32,7 @@ func Client(config *chclient.Config) {
 		log.Fatal(err)
 	}
 }
+
+func Client2(x float32) float32 {
+	return x
+}
