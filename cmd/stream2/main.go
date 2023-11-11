@@ -22,7 +22,7 @@ func Client() bool {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// c.Debug = true
+	c.Debug = true
 	// go cos.GoStats()
 	// ctx := cos.InterruptContext()
 	// if err := c.Start(ctx); err != nil {
