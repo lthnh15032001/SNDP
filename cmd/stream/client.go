@@ -95,9 +95,9 @@ func client(args []string, flags *pflag.FlagSet, config *chclient.Config) {
 	flags.Parse(args)
 	//pull out options, put back remaining args
 	args = flags.Args()
-	if len(args) < 1 {
-		log.Fatalf("At Least one remote is required")
-	}
+	// if len(args) < 1 {
+	// 	log.Fatalf("At Least one remote is required")
+	// }
 	// config.Server = "https://tunnel.rogo.com.vn"
 	// config.Remotes = args[0:]
 	if len(args) < 2 {
@@ -129,31 +129,6 @@ func client(args []string, flags *pflag.FlagSet, config *chclient.Config) {
 	if pid {
 		generatePidFile()
 	}
-	go cos.GoStats()
-	ctx := cos.InterruptContext()
-	if err := c.Start(ctx); err != nil {
-		log.Fatal(err)
-	}
-	if err := c.Wait(); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func Client(config *chclient.Config) {
-	config.Server = "https://tunnel.rogo.com.vn"
-	config.Remotes = []string{"R:localhost:5555"}
-	//default auth
-	if config.Auth == "" {
-		config.Auth = os.Getenv("AUTH")
-	}
-
-	//ready
-	c, err := chclient.NewClient(config)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	c.Debug = true
 	go cos.GoStats()
 	ctx := cos.InterruptContext()
 	if err := c.Start(ctx); err != nil {
