@@ -1,9 +1,7 @@
 package iot
 
 import (
-	"flag"
-	"fmt"
-	"os"
+	"sync"
 
 	"github.com/lthnh15032001/ngrok-impl/internal/api/config"
 	"github.com/lthnh15032001/ngrok-impl/internal/api/server"
@@ -12,20 +10,25 @@ import (
 )
 
 func newAPICommand() *cobra.Command {
-	return &cobra.Command{
+	environment := "dev"
+	apiCmd := &cobra.Command{
 		Use:   "api",
 		Short: "Iot Streaming Log - Huda - ngrok streaming log ",
 		Long:  "Iot Streaming Log - Huda - ngrok streaming log but long description",
 		Run: func(cmd *cobra.Command, args []string) {
-			environment := flag.String("e", "dev", "")
-			flag.Usage = func() {
-				fmt.Println("Usage: server -e {mode}")
-				os.Exit(1)
-			}
-			flag.Parse()
-			config.Init(*environment)
-			server.Init()
+			config.Init(environment)
+			var wg sync.WaitGroup
+			errorCh := make(chan error)
+			wg.Add(1)
+			go func() {
+				server.Init(errorCh)
+				wg.Done()
+			}()
+			wg.Wait()
+			close(errorCh)
+			// return
 		},
 	}
-
+	apiCmd.Flags().StringVar(&environment, "e", "", "")
+	return apiCmd
 }

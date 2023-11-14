@@ -1,0 +1,21 @@
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    command: --init-file /data/application/init.sql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "my-secret-pw"
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: "iot"
+    volumes:
+      - db:/var/lib/mysql
+      - ./seeds/init.sql:/data/application/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+volumes:
+  db:
+    name: db

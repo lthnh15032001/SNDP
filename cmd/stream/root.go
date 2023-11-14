@@ -32,9 +32,8 @@ var (
 func Execute(ctx context.Context) error {
 	rootCmd.AddCommand(newAPICommand()) // new API server
 
-	rootCmd.AddCommand(newHttpCommand())      // http streaming
-	rootCmd.AddCommand(newClientTCPCommand()) // tcp streaming
-	rootCmd.AddCommand(newServerTCPCommand()) // tcp streaming
+	rootCmd.AddCommand(newClientTCPCommand()) // client tcp streaming
+	rootCmd.AddCommand(newServerTCPCommand()) // server tcp streaming
 
 	// define version
 	rootCmd.AddCommand(newVersionCommand())

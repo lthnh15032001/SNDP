@@ -1,0 +1,7 @@
+server.port: 0.0.0.0:8080
+
+db.type: sqlite
+db.host:
+db.user:
+db.password:
+db.name:

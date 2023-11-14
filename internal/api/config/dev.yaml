@@ -1,1 +1,7 @@
 server.port: 0.0.0.0:8080
+
+db.type: mysql
+db.host: localhost
+db.user: root
+db.password: my-secret-pw
+db.name: iot
