@@ -1,5 +1,5 @@
 {
-  "name": "Gorya-web-client",
+  "name": "iot-stream",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
@@ -24,8 +24,9 @@
     "react-scripts": "^5.0.1",
     "react-social-login": "^3.4.17"
   },
+  "proxy": "http://localhost:8080",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set GENERATE_SOURCEMAP=false &&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"

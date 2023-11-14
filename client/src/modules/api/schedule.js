@@ -1,6 +1,7 @@
+export const backendUrl = `http://localhost:8080`
 class ScheduleService {
   list = async (accessToken) => {
-    const response = await fetch(`/api/v1alpha1/list_schedules?verbose=true`, {
+    const response = await fetch(`${backendUrl}/v1alpha1/list_schedules?verbose=true`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {
@@ -19,7 +20,7 @@ class ScheduleService {
 
   get = async (schedule, accessToken) => {
     const response = await fetch(
-      `/api/v1alpha1/get_schedule?schedule=${schedule}`,
+      `${backendUrl}/v1alpha1/get_schedule?schedule=${schedule}`,
       {
         method: 'GET',
         credentials: 'same-origin',
@@ -40,7 +41,7 @@ class ScheduleService {
 
   delete = async (schedule, accessToken) => {
     const response = await fetch(
-      `/api/v1alpha1/del_schedule?schedule=${schedule}`,
+      `${backendUrl}/v1alpha1/del_schedule?schedule=${schedule}`,
       {
         method: 'GET',
         credentials: 'same-origin',
@@ -59,7 +60,7 @@ class ScheduleService {
   };
 
   add = async (schedule, accessToken) => {
-    const response = await fetch(`/api/v1alpha1/add_schedule`, {
+    const response = await fetch(`${backendUrl}/v1alpha1/add_schedule`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
@@ -79,7 +80,7 @@ class ScheduleService {
   };
 
   timezones = async (accessToken) => {
-    const response = await fetch(`/api/v1alpha1/time_zones`, {
+    const response = await fetch(`${backendUrl}/v1alpha1/time_zones`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {

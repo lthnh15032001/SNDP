@@ -100,6 +100,16 @@ function AppFrame(props) {
 
   const classes = props.classes;
   const children = props.children;
+  return (
+    <div className={classes.root}>
+      <ResponsiveAppBar
+        title={title}
+        onClickLink={handleClickLink}
+        links={links}
+      />
+      <main className={classes.content}>{children}</main>
+    </div>
+  );
   if (keycloakInitialized) {
     return (
       <div className={classes.root}>
