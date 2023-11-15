@@ -35,6 +35,7 @@ function ResponsiveAppBar(props) {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const colorMode = React.useContext(ColorModeContext);
   const { keycloak } = useKeycloak();
+  
   const links = props.links;
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -105,7 +106,7 @@ function ResponsiveAppBar(props) {
                 textDecoration: 'none',
               }}
             >
-              Gorya
+              SNDP
             </Typography>
 
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>

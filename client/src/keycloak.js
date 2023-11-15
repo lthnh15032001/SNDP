@@ -1,8 +1,8 @@
 import Keycloak from 'keycloak-js';
 const keycloak = new Keycloak({
-  url: 'http://keycloak:8080/auth',
-  realm: 'gorya',
-  clientId: 'gorya',
+  url: 'http://localhost:8080/auth',
+  realm: 'SNDP',
+  clientId: 'sndp',
 });
 
 export default keycloak;

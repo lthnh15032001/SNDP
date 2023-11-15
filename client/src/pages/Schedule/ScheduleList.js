@@ -120,6 +120,7 @@ class ScheduleList extends React.Component {
 
   handleClick = (event, schedule) => {
     const { selected } = this.state;
+    
     const selectedIndex = indexOf(selected, schedule.name);
     let newSelected = [];
 
