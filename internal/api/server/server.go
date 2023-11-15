@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/lthnh15032001/ngrok-impl/docs"
 	"github.com/lthnh15032001/ngrok-impl/internal/api/config"
@@ -20,10 +21,13 @@ func Init(errChan chan error) (bool error) {
 	if err != nil {
 		errChan <- err
 	}
-	router := gin.New()
-	// gin.SetMode("")
-	router.Use(gin.Logger())
-	router.Use(gin.Recovery())
+	router := gin.Default()
+
+	configCors := cors.DefaultConfig()
+	configCors.AllowOrigins = []string{"*"}
+
+	// router.Use(cors.New(configCors))
+	router.Use(CORSMiddleware())
 
 	//Routes for healthcheck of api server
 	healthcheck := router.Group("health")
@@ -58,7 +62,11 @@ func Init(errChan chan error) (bool error) {
 	}
 
 	router.NoRoute(func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/swagger/index.html")
+		c.JSON(http.StatusNotFound, gin.H{
+			"code":    http.StatusNotFound,
+			"message": "Fuku",
+		})
+		// c.Redirect(http.StatusMovedPermanently, "/swagger/index.html")
 	})
 
 	errRunCfg := router.Run(config.GetString("server.port"))
@@ -66,4 +74,19 @@ func Init(errChan chan error) (bool error) {
 		errChan <- err
 	}
 	return err
+}
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }

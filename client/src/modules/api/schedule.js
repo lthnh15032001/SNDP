@@ -1,11 +1,13 @@
-export const backendUrl = `http://localhost:8080`
+export const backendUrl = `http://localhost:9080`
 class ScheduleService {
   list = async (accessToken) => {
-    const response = await fetch(`${backendUrl}/v1alpha1/list_schedules?verbose=true`, {
+    const response = await fetch(`${backendUrl}/user/`, {
       method: 'GET',
-      credentials: 'same-origin',
+      credentials: 'omit',
+      // mode: 'no-cors',
       headers: {
         Authorization: accessToken,
+        // 'Access-Control-Allow-Origin': 'no-cors'
       },
     });
 

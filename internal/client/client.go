@@ -143,7 +143,7 @@ func NewClient(c *Config) (*Client, error) {
 	}
 	//validate remotes
 	for _, s := range c.Remotes {
-		fmt.Println("ssssss", s)
+		fmt.Println("The client's remote address \n", s)
 		r, err := settings.DecodeRemote(s)
 		if err != nil {
 			return nil, fmt.Errorf("failed to decode remote '%s': %s", s, err)

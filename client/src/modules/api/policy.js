@@ -3,7 +3,7 @@ class PolicyService {
   list = async (accessToken) => {
     const response = await fetch(`${backendUrl}/v1alpha1/list_policies?verbose=true`, {
       method: 'GET',
-      credentials: 'same-origin',
+      
       headers: {
         Authorization: accessToken,
       },
@@ -21,7 +21,7 @@ class PolicyService {
   get = async (policy, accessToken) => {
     const response = await fetch(`${backendUrl}/v1alpha1/get_policy?policy=${policy}`, {
       method: 'GET',
-      credentials: 'same-origin',
+      
       headers: {
         Authorization: accessToken,
       },
@@ -39,7 +39,7 @@ class PolicyService {
   delete = async (policy, accessToken) => {
     const response = await fetch(`${backendUrl}/v1alpha1/del_policy?policy=${policy}`, {
       method: 'GET',
-      credentials: 'same-origin',
+      
       headers: {
         Authorization: accessToken,
       },
@@ -57,7 +57,7 @@ class PolicyService {
   add = async (policy, accessToken) => {
     const response = await fetch(`${backendUrl}/v1alpha1/add_policy`, {
       method: 'POST',
-      credentials: 'same-origin',
+      
       headers: {
         'Content-Type': 'application/json',
         Authorization: accessToken,
