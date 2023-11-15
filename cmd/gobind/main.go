@@ -10,19 +10,21 @@ import (
 	"github.com/lthnh15032001/ngrok-impl/share/cos"
 )
 
-func StreamLogToServer(server string, port int, findIpv4 bool, options ...string) {
+func StreamLogToServer(server string, port int, findIpv4 bool, options string) {
 	config := chclient.Config{}
 	config.Server = server
 
 	if !findIpv4 {
-		var remote string
-		if len(options) < 1 {
-			log.Fatal("Missing your ipv4, use findIpv4 is true instead")
-		}
-		for _, opt := range options {
-			remote = opt
-			config.Remotes = []string{fmt.Sprintf("R:%s:%d", remote, port)}
-		}
+		config.Remotes = []string{fmt.Sprintf("R:%s:%d", options, port)}
+
+		// var remote string
+		// if len(options) < 1 {
+		// 	log.Fatal("Missing your ipv4, use findIpv4 is true instead")
+		// }
+		// for _, opt := range options {
+		// 	remote = opt
+		// 	config.Remotes = []string{fmt.Sprintf("R:%s:%d", remote, port)}
+		// }
 
 	} else {
 		ipv4, err := GetIpv4Address()
