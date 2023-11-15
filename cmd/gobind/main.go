@@ -1,37 +1,36 @@
-package iot
+package logger
 
+// gomobile bind -target=android/arm,android/386 -javapkg rogo.iot.module .
 import (
 	"fmt"
 	"log"
 	"net"
 	"os"
+	"strconv"
+	"strings"
 
 	chclient "github.com/lthnh15032001/ngrok-impl/internal/client"
 	"github.com/lthnh15032001/ngrok-impl/share/cos"
 )
 
-func StreamLogToServer(server string, port int, findIpv4 bool, options string) {
+// R:5555:localhost:5555
+func StreamLogToServer(server string, client string, findIpv4 bool) {
 	config := chclient.Config{}
 	config.Server = server
 
 	if !findIpv4 {
-		config.Remotes = []string{fmt.Sprintf("R:%s:%d", options, port)}
-
-		// var remote string
-		// if len(options) < 1 {
-		// 	log.Fatal("Missing your ipv4, use findIpv4 is true instead")
-		// }
-		// for _, opt := range options {
-		// 	remote = opt
-		// 	config.Remotes = []string{fmt.Sprintf("R:%s:%d", remote, port)}
-		// }
-
+		config.Remotes = []string{fmt.Sprintf("R:%s", client)}
 	} else {
 		ipv4, err := GetIpv4Address()
 		if err != nil {
 			log.Fatal("Can not find Ipv4 Address")
 		}
-		config.Remotes = []string{fmt.Sprintf("R:%s:%d", ipv4, port)}
+		cPort, sPort, err := parsePorts(client)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		config.Remotes = []string{fmt.Sprintf("R:%d:%s:%d", cPort, ipv4, sPort)}
 	}
 	//default auth
 	if config.Auth == "" {
@@ -77,4 +76,25 @@ func GetIpv4Address() (string, error) {
 	}
 
 	return "", fmt.Errorf("IPv4 address not found")
+}
+func parsePorts(input string) (cPort, sPort int, err error) {
+	parts := strings.Split(input, ":")
+	if len(parts) != 2 {
+		err = fmt.Errorf("invalid input format, expected 'cPort:sPort'")
+		return
+	}
+
+	cPort, err = strconv.Atoi(parts[0])
+	if err != nil {
+		err = fmt.Errorf("failed to convert cPort to integer: %v", err)
+		return
+	}
+
+	sPort, err = strconv.Atoi(parts[1])
+	if err != nil {
+		err = fmt.Errorf("failed to convert sPort to integer: %v", err)
+		return
+	}
+
+	return
 }
