@@ -16,6 +16,16 @@ func StreamLogToServer(server string, port int, findIpv4 bool, options string) {
 
 	if !findIpv4 {
 		config.Remotes = []string{fmt.Sprintf("R:%s:%d", options, port)}
+
+		// var remote string
+		// if len(options) < 1 {
+		// 	log.Fatal("Missing your ipv4, use findIpv4 is true instead")
+		// }
+		// for _, opt := range options {
+		// 	remote = opt
+		// 	config.Remotes = []string{fmt.Sprintf("R:%s:%d", remote, port)}
+		// }
+
 	} else {
 		ipv4, err := GetIpv4Address()
 		if err != nil {
