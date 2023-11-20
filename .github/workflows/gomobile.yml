@@ -1,0 +1,34 @@
+name: Build AAR with gomobile
+
+on:
+  push:
+    paths:
+      - 'cmd/gobind/**'  # Trigger only when files under cmd/gobind are changed
+
+jobs:
+  build-aar:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+      id: go
+
+    - name: Install gomobile
+      run: go install golang.org/x/mobile/cmd/gomobile@latest
+
+    - name: Build AAR
+      run: |
+        # Replace './cmd/stream' with the actual path to your Go package.
+        gomobile bind -target=android -javapkg rogo.iot.module.logger ./cmd/stream
+
+    - name: Archive AAR
+      uses: actions/upload-artifact@v2
+      with:
+        name: iot-library
+        path: rogo.iot.module.logger.aar
