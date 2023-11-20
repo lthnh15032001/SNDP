@@ -18,7 +18,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// ngrok-impl server --port 8081 --reverse --brokers mqvnaa01.rogo.com.vn:31884,staging.mqvnaa01.rogo.com.vn:31887
+// ngrok-impl server --port 8081 --reverse --brokers xxx:1883,yyy:1883
 func newServerTCPCommand() *cobra.Command {
 	config := &chserver.Config{}
 	clientCmd := &cobra.Command{
