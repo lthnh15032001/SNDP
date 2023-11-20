@@ -173,7 +173,12 @@ func (s *Server) StartContext(ctx context.Context, host, port string) error {
 	if err != nil {
 		return err
 	}
+
+	// broadcast adb log
+	// go s.broadcastLogcatOutput()
+	// http.HandleFunc("/ws", s.handleWebSocketConnection)
 	h := http.Handler(http.HandlerFunc(s.handleClientHandler))
+
 	if s.Debug {
 		o := requestlog.DefaultOptions
 		o.TrustProxy = true

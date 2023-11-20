@@ -42,10 +42,15 @@ func (s *Server) handleClientHandler(w http.ResponseWriter, r *http.Request) {
 	case "/version":
 		w.Write([]byte(chshare.BuildVersion))
 		return
+	// TODO: filter path to match clientId connected
+	default:
+		go s.broadcastLogcatOutput()
+		s.handleWebSocketConnection(w, r)
+		return
 	}
 	//missing :O
-	w.WriteHeader(404)
-	w.Write([]byte("Not found"))
+	// w.WriteHeader(404)
+	// w.Write([]byte("Not found"))
 }
 
 // handleWebsocket is responsible for handling the websocket connection

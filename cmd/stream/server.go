@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lthnh15032001/ngrok-impl/internal/constants"
 	chserver "github.com/lthnh15032001/ngrok-impl/internal/server"
 	"github.com/lthnh15032001/ngrok-impl/share/ccrypto"
 	"github.com/lthnh15032001/ngrok-impl/share/cos"
@@ -17,6 +18,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
+// ngrok-impl server --port 8081 --reverse --brokers mqvnaa01.rogo.com.vn:31884,staging.mqvnaa01.rogo.com.vn:31887
 func newServerTCPCommand() *cobra.Command {
 	config := &chserver.Config{}
 	clientCmd := &cobra.Command{
@@ -41,6 +43,8 @@ func newServerTCPCommand() *cobra.Command {
 	clientCmd.Flags().StringVar(&config.TLS.Cert, "tls-cert", "", "")
 	clientCmd.Flags().Var(multiFlag{&config.TLS.Domains}, "tls-domain", "")
 	clientCmd.Flags().StringVar(&config.TLS.CA, "tls-ca", "", "")
+
+	clientCmd.Flags().String("brokers", "", "")
 
 	clientCmd.Flags().String("host", os.Getenv("HOST"), "")
 	clientCmd.Flags().String("p", "0.0.0.0", "")
@@ -84,6 +88,7 @@ func serverTCP(args []string, flags *pflag.FlagSet, config *chserver.Config) {
 	port := flags.Lookup("port").Value.String()
 	pid := strToBoolean(flags.Lookup("pid").Value.String())
 	keyGen := flags.Lookup("keygen").Value.String()
+	brokers := flags.Lookup("brokers").Value.String()
 
 	flags.Parse(args)
 
@@ -119,10 +124,40 @@ func serverTCP(args []string, flags *pflag.FlagSet, config *chserver.Config) {
 	} else if config.KeySeed == "" {
 		config.KeySeed = settings.Env("KEY")
 	}
+
+	// connect multiple broker mqtt
+	broker := strings.Split(brokers, ",")
+	if len(broker) < 1 {
+		log.Fatal("Broker is not defined")
+	}
+	go func() {
+		for _, element := range broker {
+			mqttHostPort := strings.Split(element, ":")
+			if len(mqttHostPort) <= 1 {
+				log.Fatal("Broker is in wrong format")
+			}
+			portMqtt, _ := strconv.Atoi(mqttHostPort[1])
+			mqttInfo := &MqttConfig{
+				ClientId:       constants.ENV_MQTT_CLIENTID,
+				ClientUsername: constants.ENV_MQTT_CLIENTUSERNAME,
+				ClientPassword: constants.ENV_MQTT_CLIENTPASSWORD,
+				Broker:         mqttHostPort[0],
+				Port:           portMqtt,
+			}
+			cMqtt, err := NewMqttConnection(mqttInfo)
+			if err == nil {
+				cMqtt.sub("mqvnaa01/user/abc/12312")
+			} else {
+				fmt.Printf("MQTT with host %s error %s", mqttHostPort[0], err)
+			}
+		}
+	}()
+
 	s, err := chserver.NewServer(config)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	s.Debug = true
 	if pid {
 		generatePidFile()
