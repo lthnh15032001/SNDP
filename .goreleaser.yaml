@@ -1,20 +1,30 @@
 builds:
-- main: ./cmd/ 
-  id: "SNDP"
+- main: ./cmd/
+  id: LINUX_SNDP
   env:
     - CGO_ENABLED=0
   goos:
     - linux
+  goarch:
+    - amd64
+    - arm64
+- main: ./cmd/
+  id: WINDOWS_SNDP
+  env:
+    - CGO_ENABLED=0
+  goos:
     - windows
+  goarch:
+    - amd64
+- main: ./cmd/
+  id: DARWIN_SNDP
+  env:
+    - CGO_ENABLED=0
+  goos:
     - darwin
   goarch:
     - amd64
     - arm64
+
 archives:
   - name_template: "SNDP_{{ .Version }}_{{ .OS }}_{{ .Arch }}"
-    
-changelog:
-  sort: asc
-  filters:
-    exclude:
-      - '^docs:'
