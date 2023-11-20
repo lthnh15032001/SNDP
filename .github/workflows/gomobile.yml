@@ -40,4 +40,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: iot-library
-        path: rogo.iot.module.logger.aar
+        path: logger.aar
