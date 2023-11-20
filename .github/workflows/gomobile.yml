@@ -21,13 +21,14 @@ jobs:
 
     - name: Install gomobile
       run: go install golang.org/x/mobile/cmd/gomobile@latest
-    - name: Setup Android
-      uses: reactivecircus/android-emulator-runner@v2
+    - uses: nttld/setup-ndk@v1
+      id: setup-ndk
       with:
-        api-level: 29
-        ndk: 21.4.7075529
-        script: echo "Generated AVD snapshot for caching."
+        ndk-version: r21e
+        add-to-path: false
     - name: Build AAR
+      env:
+        ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
       run: |
         # Replace './cmd/stream' with the actual path to your Go package.
         gomobile bind -ldflags="-w -s" -target=android/arm -javapkg rogo.iot.module ./cmd/gobind
