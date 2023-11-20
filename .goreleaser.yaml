@@ -1,5 +1,6 @@
 builds:
 - main: ./cmd/
+  id: LINUX_SNDP
   env:
     - CGO_ENABLED=0
   goos:
@@ -7,8 +8,8 @@ builds:
   goarch:
     - amd64
     - arm64
-    - 
 - main: ./cmd/
+  id: WINDOWS_SNDP
   env:
     - CGO_ENABLED=0
   goos:
@@ -16,6 +17,7 @@ builds:
   goarch:
     - amd64
 - main: ./cmd/
+  id: DARWIN_SNDP
   env:
     - CGO_ENABLED=0
   goos:
