@@ -1,6 +1,6 @@
 builds:
-- id: LINUX_SNDP
-  main: ./cmd/ 
+- main: ./cmd/ 
+  id: "SNDP"
   env:
     - CGO_ENABLED=0
   goos:
@@ -10,3 +10,11 @@ builds:
   goarch:
     - amd64
     - arm64
+archives:
+  - name_template: "SNDP_{{ .Version }}_{{ .OS }}_{{ .Arch }}"
+    
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
