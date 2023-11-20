@@ -32,7 +32,6 @@ jobs:
       env:
         ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
       run: |
-        # Replace './cmd/stream' with the actual path to your Go package.
         gomobile init 
         gomobile bind -ldflags="-w -s" -target=android/arm -javapkg rogo.iot.module ./cmd/gobind
 
