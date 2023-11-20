@@ -25,7 +25,7 @@ jobs:
     - name: Build AAR
       run: |
         # Replace './cmd/stream' with the actual path to your Go package.
-        gomobile bind -target=android -javapkg rogo.iot.module.logger ./cmd/gobind
+        gomobile bind -ldflags="-w -s" -target=android/arm -javapkg rogo.iot.module ./cmd/gobind
 
     - name: Archive AAR
       uses: actions/upload-artifact@v2
