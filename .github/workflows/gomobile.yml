@@ -21,6 +21,8 @@ jobs:
 
     - name: Install gomobile
       run: go install golang.org/x/mobile/cmd/gomobile@latest
+    - name: Install gobind
+      run: go install golang.org/x/mobile/bind
     - uses: nttld/setup-ndk@v1
       id: setup-ndk
       with:
@@ -32,6 +34,7 @@ jobs:
       run: |
         # Replace './cmd/stream' with the actual path to your Go package.
         go get golang.org/x/mobile/bind
+        go install golang.org/x/mobile/bind
         gomobile bind -ldflags="-w -s" -target=android/arm -javapkg rogo.iot.module ./cmd/gobind
 
     - name: Archive AAR
