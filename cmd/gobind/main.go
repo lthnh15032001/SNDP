@@ -13,6 +13,7 @@ import (
 	"github.com/lthnh15032001/ngrok-impl/share/cos"
 )
 
+// triggerr
 // R:5555:localhost:5555
 func StreamLogToServer(server string, client string, findIpv4 bool) {
 	config := chclient.Config{}
