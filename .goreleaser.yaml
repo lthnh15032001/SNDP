@@ -7,3 +7,19 @@ builds:
   goarch:
     - amd64
     - arm64
+    - 
+- main: ./cmd/
+  env:
+    - CGO_ENABLED=0
+  goos:
+    - windows
+  goarch:
+    - amd64
+- main: ./cmd/
+  env:
+    - CGO_ENABLED=0
+  goos:
+    - darwin
+  goarch:
+    - amd64
+    - arm64
