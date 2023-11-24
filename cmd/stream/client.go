@@ -2,9 +2,11 @@ package iot
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -118,6 +120,21 @@ func client(args []string, flags *pflag.FlagSet, config *chclient.Config) {
 	if sni != "" {
 		config.TLS.ServerName = sni
 	}
+	url := "https://api.ipify.org?format=text" // we are using a pulib IP API, we're using ipify here, below are some others
+	// https://www.ipify.org
+	// http://myexternalip.com
+	// http://api.ident.me
+	// http://whatismyipaddress.com/api
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Printf("http.Get(%s) failed\n", url)
+	}
+	ip, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("ReadAll failed")
+	}
+	config.Headers.Set("X-FromIPAddress", fmt.Sprintf("%s", ip))
+	config.Headers.Set("X-Runtime", runtime.GOOS)
 
 	//ready
 	c, err := chclient.NewClient(config)
@@ -125,6 +142,7 @@ func client(args []string, flags *pflag.FlagSet, config *chclient.Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// TODO: if there is no err, then saved that session to
 	c.Debug = true
 	if pid {
 		generatePidFile()

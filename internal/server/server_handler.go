@@ -1,11 +1,14 @@
 package chserver
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"sync/atomic"
 	"time"
 
+	"github.com/google/uuid"
+	"github.com/lthnh15032001/ngrok-impl/internal/models"
 	chshare "github.com/lthnh15032001/ngrok-impl/share"
 	"github.com/lthnh15032001/ngrok-impl/share/cnet"
 	"github.com/lthnh15032001/ngrok-impl/share/settings"
@@ -81,6 +84,7 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 		user = u
 		s.sessions.Del(sid)
 	}
+	fmt.Printf("user %v\n", user)
 	// chisel server handshake (reverse of client handshake)
 	// verify configuration
 	l.Debugf("Verifying configuration")
@@ -141,6 +145,7 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 	//successfuly validated config!
 	r.Reply(true, nil)
 	//tunnel per ssh connection
+
 	tunnel := tunnel.New(tunnel.Config{
 		Logger:    l,
 		Inbound:   s.config.Reverse,
@@ -163,10 +168,38 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 		//block
 		return tunnel.BindRemotes(ctx, serverInbound)
 	})
+	// add to db
+	ipAddr := req.Header.Get("X-Fromipaddress")
+	if ipAddr == "" {
+		ipAddr = req.RemoteAddr
+	}
+	uuidV4, _ := uuid.NewRandom()
+	fmt.Printf("uuidv4 add %s", uuidV4)
+
+	tunnelAgentModel := models.TunnelAgentModel{
+		ID:           uuidV4.String(),
+		Region:       "ap-southeast",
+		IP:           ipAddr,
+		Version:      c.Version,
+		TunnelOnline: id,
+		StartedAt:    time.Now(),
+		OS:           req.Header.Get("X-Runtime"),
+		Metadata:     fmt.Sprintf("%+v", c.Remotes),
+		Status:       1,
+	}
+	err = s.sc.AddTunnel(tunnelAgentModel)
 	err = eg.Wait()
 	if err != nil && !strings.HasSuffix(err.Error(), "EOF") {
 		l.Debugf("Closed connection (%s)", err)
 	} else {
 		l.Debugf("Closed connection")
 	}
+
+	//  Change status when connection closed
+	err = s.sc.DeleteTunnel(uuidV4.String())
+
+	if err != nil {
+		l.Debugf("Updated failed when Closed connection ")
+	}
+
 }

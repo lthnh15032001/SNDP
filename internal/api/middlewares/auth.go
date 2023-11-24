@@ -1,31 +1,86 @@
 package middlewares
 
 import (
-	"strings"
+	"crypto/tls"
+	"net/http"
+	"time"
 
+	"github.com/coreos/go-oidc"
 	"github.com/lthnh15032001/ngrok-impl/internal/api/config"
+	"github.com/lthnh15032001/ngrok-impl/internal/constants"
 
 	"github.com/gin-gonic/gin"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		config := config.GetConfig()
-		reqKey := c.Request.Header.Get("X-Auth-Key")
-		reqSecret := c.Request.Header.Get("X-Auth-Secret")
+type Claims struct {
+	ResourceAccess client `json:"resource_access,omitempty"`
+	JTI            string `json:"jti,omitempty"`
+}
 
-		var key string
-		var secret string
-		if key = config.GetString("http.auth.key"); len(strings.TrimSpace(key)) == 0 {
-			c.AbortWithStatus(500)
+type client struct {
+	SNDPServiceClient clientRoles `json:"sndp,omitempty"`
+}
+
+type clientRoles struct {
+	Roles []string `json:"roles,omitempty"`
+}
+
+func authorisationFailed(message string, c *gin.Context) {
+	c.Writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+	c.AbortWithStatus(401)
+	c.AbortWithStatusJSON(401, gin.H{
+		"message": message,
+	})
+}
+
+func AuthMiddleware(role string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		config := config.GetConfig()
+		issuerUrl := config.GetString(constants.ENV_OIDC_ISSUER_URL)
+		clientID := config.GetString(constants.ENV_OIDC_CLIENT_ID)
+
+		rawAccessToken := c.Request.Header.Get("Authorization")
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
-		if secret = config.GetString("http.auth.secret"); len(strings.TrimSpace(secret)) == 0 {
-			c.AbortWithStatus(401)
+		client := &http.Client{
+			Timeout:   time.Duration(6000) * time.Second,
+			Transport: tr,
 		}
-		if key != reqKey || secret != reqSecret {
-			c.AbortWithStatus(401)
+		ctx := oidc.ClientContext(c, client)
+		provider, err := oidc.NewProvider(ctx, issuerUrl)
+		if err != nil {
+			authorisationFailed("authorisation failed while getting the provider: "+err.Error(), c)
 			return
 		}
-		c.Next()
+
+		oidcConfig := &oidc.Config{
+			ClientID: clientID,
+			//skip check aud in jwt payload since in keycloak it's always `account`
+			SkipClientIDCheck: true,
+		}
+		verifier := provider.Verifier(oidcConfig)
+		idToken, err := verifier.Verify(ctx, rawAccessToken)
+		if err != nil {
+			authorisationFailed("authorisation failed while verifying the token: "+err.Error(), c)
+			return
+		}
+
+		var IDTokenClaims Claims
+		if err := idToken.Claims(&IDTokenClaims); err != nil {
+			authorisationFailed("claims : "+err.Error(), c)
+			return
+		}
+		//checking the roles
+		user_access_roles := IDTokenClaims.ResourceAccess.SNDPServiceClient.Roles
+		for _, b := range user_access_roles {
+			if b == role {
+				c.Next()
+				return
+			}
+		}
+
+		authorisationFailed("user not allowed to access this api", c)
 	}
 }

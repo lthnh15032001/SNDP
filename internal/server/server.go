@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/lthnh15032001/ngrok-impl/internal/store"
 	chshare "github.com/lthnh15032001/ngrok-impl/share"
 	"github.com/lthnh15032001/ngrok-impl/share/ccrypto"
 	"github.com/lthnh15032001/ngrok-impl/share/cio"
@@ -46,6 +47,7 @@ type Server struct {
 	sessions     *settings.Users
 	sshConfig    *ssh.ServerConfig
 	users        *settings.UserIndex
+	sc           store.Interface
 }
 
 var upgrader = websocket.Upgrader{
@@ -163,6 +165,11 @@ func (s *Server) Start(host, port string) error {
 // and can be closed by cancelling the provided context
 func (s *Server) StartContext(ctx context.Context, host, port string) error {
 	s.Infof("Fingerprint %s", s.fingerprint)
+	var err error
+	s.sc, err = store.GetOnce()
+	if err != nil {
+		return err
+	}
 	if s.users.Len() > 0 {
 		s.Infof("User authentication enabled")
 	}

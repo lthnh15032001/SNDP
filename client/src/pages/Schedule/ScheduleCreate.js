@@ -52,12 +52,12 @@ class ScheduleCreate extends React.Component {
   async componentDidMount() {
     const { keycloak } = this.props;
     try {
-      this.setState({ isLoading: true });
-      const response = await this.scheduleService.timezones(keycloak.token);
-      this.setState({
-        timezones: response.Timezones,
-        isLoading: false,
-      });
+      // this.setState({ isLoading: true });
+      // const response = await this.scheduleService.timezones(keycloak.token);
+      // this.setState({
+      //   timezones: response.Timezones,
+      //   isLoading: false,
+      // });
     } catch (error) {
       this.handleBackendError(
         'Loading timezones failed:',

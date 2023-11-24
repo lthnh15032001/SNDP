@@ -20,7 +20,16 @@ import startsWith from 'lodash/startsWith';
 import { withKeycloak } from '@react-keycloak/web';
 import ResponsiveAppBar from './AppBar';
 
-const drawerWidth = 210;
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Drawer from '@material-ui/core/Drawer';
+import map from 'lodash/map';
+import { ListItemButton } from '@mui/material';
+import Divider from '@material-ui/core/Divider';
+
+const drawerWidth = 280;
 
 const links = [
   {
@@ -31,6 +40,11 @@ const links = [
   {
     primary: 'Policies',
     path: '/policies/browser',
+    icon: <PolicyIcon />,
+  },
+  {
+    primary: 'Tunnels',
+    path: '/tunnels/agent',
     icon: <PolicyIcon />,
   },
 ];
@@ -70,13 +84,14 @@ const styles = (theme) => ({
     height: '100%',
   },
   content: {
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.grey,
     width: '100%',
-    height: 'calc(100% - 56px)',
-    marginTop: 56,
     [theme.breakpoints.up('sm')]: {
       height: 'calc(100% - 64px)',
-      marginTop: 64,
+    },
+    marginLeft: drawerWidth,
+    [theme.breakpoints.up('md')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
     },
   },
 });
@@ -84,6 +99,7 @@ const styles = (theme) => ({
 function AppFrame(props) {
   const [title, setTitle] = useState('');
   const keycloakInitialized = props.keycloakInitialized;
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
   useEffect(() => {
     const currentLink = find(links, (link) =>
       startsWith(props.history.location.pathname, link.path)
@@ -110,15 +126,53 @@ function AppFrame(props) {
   //     <main className={classes.content}>{children}</main>
   //   </div>
   // );
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+    setDrawerOpen(open);
+  };
+  const drawer = (
+    <div style={{width: drawerWidth}}>
+      <List dense disablePadding>
+        {map(links, (page, _) => (
+          <ListItem key={page.primary} button onClick={handleClickLink(page)}>
+            <ListItemButton>
+              <ListItemIcon>{page.icon}</ListItemIcon>
+              <ListItemText primary={page.primary} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+    </div>
+  );
+
   if (keycloakInitialized) {
     return (
       <div className={classes.root}>
-        <ResponsiveAppBar
-          title={title}
-          onClickLink={handleClickLink}
-          links={links}
-        />
-        <main className={classes.content}>{children}</main>
+        <Drawer
+          anchor="left"
+          open={true}
+          onClose={toggleDrawer(false)}
+          variant='permanent'
+        >
+          {drawer}
+        </Drawer>
+
+        <main  className={classes.content}>
+          <ResponsiveAppBar
+            title={title}
+            onClickLink={handleClickLink}
+            links={links}
+          />
+          <div style={{ maxWidth: 1200, margin: '0 auto'}}>
+            {children}
+          </div>
+        </main>
       </div>
     );
   } else {

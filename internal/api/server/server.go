@@ -8,6 +8,7 @@ import (
 	"github.com/lthnh15032001/ngrok-impl/docs"
 	"github.com/lthnh15032001/ngrok-impl/internal/api/config"
 	"github.com/lthnh15032001/ngrok-impl/internal/api/controllers"
+	middlewares "github.com/lthnh15032001/ngrok-impl/internal/api/middlewares"
 	"github.com/lthnh15032001/ngrok-impl/internal/store"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -57,14 +58,24 @@ func Init(errChan chan error) (bool error) {
 			StoreInterface: scInterface,
 		}
 
-		user.GET("/", userController.GetAllUsers)
+		user.GET("/", middlewares.AuthMiddleware("getUsers"), userController.GetAllUsers)
 		user.POST("/", userController.GetAllUsers)
+	}
+
+	tunnel := router.Group("tunnel")
+	{
+		tunnelController := &controllers.TunnelController{
+			StoreInterface: scInterface,
+		}
+
+		tunnel.GET("/", middlewares.AuthMiddleware("get-tunnel"), tunnelController.GetTunnelActive)
+		tunnel.POST("/", middlewares.AuthMiddleware("get-tunnel"), tunnelController.AddTunnel)
 	}
 
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"code":    http.StatusNotFound,
-			"message": "Fuku",
+			"message": "Not Found API",
 		})
 		// c.Redirect(http.StatusMovedPermanently, "/swagger/index.html")
 	})

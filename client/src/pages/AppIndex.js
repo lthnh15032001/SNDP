@@ -22,6 +22,8 @@ import ScheduleList from './Schedule/ScheduleList';
 import ScheduleCreate from './Schedule/ScheduleCreate';
 import ScheduleEdit from './Schedule/ScheduleEdit';
 
+import TunnelAgent from './Tunnels/Agents';
+
 import Policy from './Policy/Policy';
 import PolicyList from './Policy/PolicyList';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
@@ -71,7 +73,12 @@ class Index extends React.Component {
             <Route
               exact
               path="/"
-              render={() => <Redirect to="/schedules/browser" />}
+              render={() => <Redirect to="/tunnels/agent" />}
+            />
+            <Route
+              exact
+              path="/tunnels/agent"
+              component={TunnelAgent}
             />
             <Route exact path="/schedules/create" component={ScheduleCreate} />
             <Route exact path="/schedules/browser" component={ScheduleList} />

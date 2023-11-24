@@ -1,5 +1,4 @@
 import * as React from 'react';
-import classNames from 'classnames';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -7,7 +6,6 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -15,19 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import FilterDrama from '@mui/icons-material/FilterDrama';
 import { useKeycloak } from '@react-keycloak/web';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Hidden from '@material-ui/core/Hidden';
-import List from '@material-ui/core/List';
-import map from 'lodash/map';
-import startsWith from 'lodash/startsWith';
-import Drawer from '@material-ui/core/Drawer';
-import { ListItemButton } from '@mui/material';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
+const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
 function ResponsiveAppBar(props) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -35,7 +21,7 @@ function ResponsiveAppBar(props) {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const colorMode = React.useContext(ColorModeContext);
   const { keycloak } = useKeycloak();
-  
+
   const links = props.links;
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -51,45 +37,13 @@ function ResponsiveAppBar(props) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const drawer = (
-    <div>
-      <List dense disablePadding>
-        {map(links, (page, _) => (
-          <ListItem key={page.primary} button onClick={props.onClickLink(page)}>
-            <ListItemButton>
-              <ListItemIcon>{page.icon}</ListItemIcon>
-              <ListItemText primary={page.primary} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-    </div>
-  );
-  const toggleDrawer = (open) => (event) => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
-      return;
-    }
-    setDrawerOpen(open);
-  };
+
   return (
     <div>
-      <AppBar position="absolute" color="primary" elevation={2} square>
-        <Container maxWidth="false">
-          <Toolbar disableGutters>
-            <IconButton color="inherit" aria-label="open drawer">
-              <MenuIcon onClick={toggleDrawer(true)} />
-              <Drawer
-                anchor="left"
-                open={drawerOpen}
-                onClose={toggleDrawer(false)}
-              >
-                {drawer}
-              </Drawer>
-            </IconButton>
+      <AppBar color="inherit" position="relative" >
+
+        <Container maxWidth>
+          <Toolbar disableGutters sx={{ justifyContent: 'between' }}>
             <FilterDrama sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
             <Typography
               variant="h6"
@@ -109,7 +63,7 @@ function ResponsiveAppBar(props) {
               SNDP
             </Typography>
 
-            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+            {/* <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
                 size="large"
                 aria-label="account of current user"
@@ -145,7 +99,7 @@ function ResponsiveAppBar(props) {
                   </MenuItem>
                 ))}
               </Menu>
-            </Box>
+            </Box> */}
             <FilterDrama sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
             <Typography
               variant="h5"
@@ -163,10 +117,10 @@ function ResponsiveAppBar(props) {
                 textDecoration: 'none',
               }}
             >
-              LOGO
+              SNDP
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {links.map((page) => (
+              {/* {links.map((page) => (
                 <Button
                   key={page.primary}
                   onClick={props.onClickLink(page)}
@@ -174,7 +128,7 @@ function ResponsiveAppBar(props) {
                 >
                   {page.primary}
                 </Button>
-              ))}
+              ))} */}
             </Box>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">

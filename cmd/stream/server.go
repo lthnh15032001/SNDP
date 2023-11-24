@@ -127,31 +127,30 @@ func serverTCP(args []string, flags *pflag.FlagSet, config *chserver.Config) {
 
 	// connect multiple broker mqtt
 	broker := strings.Split(brokers, ",")
-	if len(broker) < 1 {
-		log.Fatal("Broker is not defined")
+	if brokers != "" && len(broker) >= 1 {
+		go func() {
+			for _, element := range broker {
+				mqttHostPort := strings.Split(element, ":")
+				if len(mqttHostPort) <= 1 {
+					log.Fatal("Broker is in wrong format")
+				}
+				portMqtt, _ := strconv.Atoi(mqttHostPort[1])
+				mqttInfo := &MqttConfig{
+					ClientId:       constants.ENV_MQTT_CLIENTID,
+					ClientUsername: constants.ENV_MQTT_CLIENTUSERNAME,
+					ClientPassword: constants.ENV_MQTT_CLIENTPASSWORD,
+					Broker:         mqttHostPort[0],
+					Port:           portMqtt,
+				}
+				cMqtt, err := NewMqttConnection(mqttInfo)
+				if err == nil {
+					cMqtt.sub("mqvnaa01/user/abc/12312")
+				} else {
+					fmt.Printf("MQTT with host %s error %s", mqttHostPort[0], err)
+				}
+			}
+		}()
 	}
-	go func() {
-		for _, element := range broker {
-			mqttHostPort := strings.Split(element, ":")
-			if len(mqttHostPort) <= 1 {
-				log.Fatal("Broker is in wrong format")
-			}
-			portMqtt, _ := strconv.Atoi(mqttHostPort[1])
-			mqttInfo := &MqttConfig{
-				ClientId:       constants.ENV_MQTT_CLIENTID,
-				ClientUsername: constants.ENV_MQTT_CLIENTUSERNAME,
-				ClientPassword: constants.ENV_MQTT_CLIENTPASSWORD,
-				Broker:         mqttHostPort[0],
-				Port:           portMqtt,
-			}
-			cMqtt, err := NewMqttConnection(mqttInfo)
-			if err == nil {
-				cMqtt.sub("mqvnaa01/user/abc/12312")
-			} else {
-				fmt.Printf("MQTT with host %s error %s", mqttHostPort[0], err)
-			}
-		}
-	}()
 
 	s, err := chserver.NewServer(config)
 	if err != nil {

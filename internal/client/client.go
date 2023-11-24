@@ -193,6 +193,14 @@ func NewClient(c *Config) (*Client, error) {
 	return client, nil
 }
 
+func (c *Client) GetConfiguration() *Config {
+	return c.config
+}
+
+func (c *Client) GetTunnel() *tunnel.Tunnel {
+	return c.tunnel
+}
+
 // Run starts client and blocks while connected
 func (c *Client) Run() error {
 	ctx, cancel := context.WithCancel(context.Background())

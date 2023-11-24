@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,14 +18,12 @@ type UserController struct {
 // @Success 200 {string} pong
 // @Router /health/ping [get]
 func (h *UserController) GetAllUsers(c *gin.Context) {
-	fmt.Println(h.StoreInterface.ListSchedule())
 	c.JSON(http.StatusOK, gin.H{
 		"message": "pong",
 	})
 }
 
 func (h *UserController) AddUser(c *gin.Context) {
-	h.StoreInterface.ListSchedule()
 	c.JSON(http.StatusOK, gin.H{
 		"message": "pong",
 	})

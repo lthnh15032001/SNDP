@@ -5,3 +5,6 @@ db.host: localhost
 db.user: root
 db.password: my-secret-pw
 db.name: iot
+
+oidc.issuer_url: "http://localhost:8080/auth/realms/SNDP"
+oidc.client_id: sndp
