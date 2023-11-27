@@ -15,6 +15,16 @@ type Storage struct {
 	db *gorm.DB
 }
 
+// GetUser implements Interface.
+func (c *Storage) GetUser(userId string) (*[]models.UserModel, error) {
+	var r []models.UserModel
+	query := c.db.Model(&models.UserModel{}).Where("user_id = ?", userId)
+	if err := query.Find(&r).Error; err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
+
 // AddUser implements Interface.
 func (c *Storage) AddUser(user models.UserModel) error {
 

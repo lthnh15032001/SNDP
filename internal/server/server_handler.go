@@ -84,7 +84,6 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 		user = u
 		s.sessions.Del(sid)
 	}
-	fmt.Printf("user %v\n", user)
 	// chisel server handshake (reverse of client handshake)
 	// verify configuration
 	l.Debugf("Verifying configuration")
@@ -187,7 +186,6 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 		Status:       1,
 		UserRemoteId: user.Name,
 	}
-	fmt.Printf("%+v", tunnelAgentModel)
 	err = s.sc.AddTunnel(tunnelAgentModel)
 	err = eg.Wait()
 	if err != nil && !strings.HasSuffix(err.Error(), "EOF") {

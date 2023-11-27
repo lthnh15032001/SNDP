@@ -215,16 +215,7 @@ class TunnelAgent extends React.Component {
 
         return (
             <div className={classes.root}>
-                {/* <AppPageActions>
-                    <Button
-                        className={classes.button}
-                        color="primary"
-                        size="small"
-                        onClick={this.handleClickNavigate(`/schedules/create`)}
-                    >
-                        <AddIcon className={classes.leftIcon} />
-                        Create Schedule
-                    </Button>
+                <AppPageActions>  
                     <Button
                         className={classes.button}
                         color="primary"
@@ -234,29 +225,7 @@ class TunnelAgent extends React.Component {
                         <RefreshIcon className={classes.leftIcon} />
                         Refresh
                     </Button>
-                    <Button
-                        className={classes.button}
-                        color="primary"
-                        size="small"
-                        disabled={selected.length !== 1}
-                        onClick={this.handleClickNavigate(
-                            `/schedules/browser/${selected[0]}`
-                        )}
-                    >
-                        <EditIcon className={classes.leftIcon} />
-                        Edit
-                    </Button>
-                    <Button
-                        className={classes.button}
-                        color="primary"
-                        size="small"
-                        disabled={selected.length < 1}
-                        onClick={this.handleDeleteClick}
-                    >
-                        <DeleteIcon className={classes.leftIcon} />
-                        Delete
-                    </Button>
-                </AppPageActions> */}
+                </AppPageActions>
 
                 <AppPageContent
                     showBackendError={showBackendError}
@@ -286,9 +255,9 @@ class TunnelAgent extends React.Component {
                                             direction={order}
                                         // onClick={this.handleRequestSort}
                                         >
-                                            Tunnels Agents
+                                            ID
                                         </TableSortLabel>
-                                        
+
                                     </Tooltip>
                                 </TableCell>
                                 <TableCell sortDirection={order}>
@@ -302,10 +271,13 @@ class TunnelAgent extends React.Component {
                                             direction={order}
                                         // onClick={this.handleRequestSort}
                                         >
-                                            IP
+                                            User
                                         </TableSortLabel>
 
                                     </Tooltip>
+                                </TableCell>
+                                <TableCell sortDirection={order}>
+                                    Ip
                                 </TableCell>
                                 <TableCell sortDirection={order}>
                                     Region
@@ -345,12 +317,19 @@ class TunnelAgent extends React.Component {
 
                                         <TableCell>
                                             <span
-                                                onClick={this.handleClickNavigate(
-                                                    `/schedules/browser/${tunnel.name}`
-                                                )}
+                                                // onClick={this.handleClickNavigate(
+                                                //     `/schedules/browser/${tunnel.name}`
+                                                // )}
                                                 className={classes.link}
                                             >
                                                 {tunnel.ID}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span
+                                                className={classes.link}
+                                            >
+                                                {tunnel.userRemoteId}
                                             </span>
                                         </TableCell>
                                         <TableCell>

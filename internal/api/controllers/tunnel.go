@@ -45,7 +45,7 @@ func (h *TunnelController) AddTunnel(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"data":   err,
+			"data":   err.Error(),
 		})
 		return
 	}
@@ -60,7 +60,7 @@ func (h *TunnelController) GetTunnelActive(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"data":   err,
+			"data":   err.Error(),
 		})
 		return
 	}

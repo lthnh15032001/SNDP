@@ -12,4 +12,5 @@ type Interface interface {
 	DeleteTunnel(uuid string) error
 
 	AddUser(user models.UserModel) error
+	GetUser(userid string) (*[]models.UserModel, error)
 }

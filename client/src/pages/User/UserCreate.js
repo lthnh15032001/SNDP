@@ -102,7 +102,7 @@ class UserCreate extends React.Component {
             }
             await this.userService.create(userCreateDTO, keycloak.token);
             this.setState({ isLoading: false });
-            // history.push('/user');
+            history.push('/users');
         } catch (error) {
             this.handleBackendError('Saving failed:', error.message);
         }

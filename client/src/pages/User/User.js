@@ -27,10 +27,10 @@ import map from 'lodash/map';
 import indexOf from 'lodash/indexOf';
 
 // Project
-import TunnelService from '../../modules/api/tunnel';
 import AppPageContent from '../../modules/components/AppPageContent';
 import AppPageActions from '../../modules/components/AppPageActions';
 import { withKeycloak } from '@react-keycloak/web';
+import UserService from '../../modules/api/user';
 const styles = (theme) => ({
     root: {
         height: '100%',
@@ -56,7 +56,7 @@ class User extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            tunnels: [],
+            users: [],
             selected: [],
             order: 'asc',
             isLoading: false,
@@ -65,7 +65,7 @@ class User extends React.Component {
             backendErrorMessage: null,
         };
 
-        this.tunnelService = new TunnelService();
+        this.userService = new UserService();
     }
 
     componentDidMount() {
@@ -108,9 +108,9 @@ class User extends React.Component {
         const { keycloak } = this.props;
         this.setState({ isLoading: true });
         try {
-            const tunnels = await this.tunnelService.list(keycloak.token);
+            const users = await this.userService.list(keycloak.token);
             this.setState({
-                tunnels,
+                users,
                 isLoading: false,
             });
         } catch (error) {
@@ -118,71 +118,6 @@ class User extends React.Component {
         }
     };
 
-    handleClick = (event, schedule) => {
-        const { selected } = this.state;
-
-        const selectedIndex = indexOf(selected, schedule.name);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, schedule.name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1)
-            );
-        }
-
-        this.setState({ selected: newSelected });
-    };
-
-    handleSelectAllClick = (event, checked) => {
-        if (checked) {
-            this.setState({ selected: this.state.tunnels.map((p) => p.name) });
-        } else {
-            this.setState({ selected: [] });
-        }
-    };
-
-    handleDeleteClick = async (event) => {
-        const { keycloak } = this.props;
-        try {
-            const { selected } = this.state;
-            if (selected.length > 0) {
-                const promises = [];
-                this.setState({ isLoading: true });
-                selected.forEach((schedule) => {
-                    promises.push(
-                        this.scheduleService
-                            .delete(schedule, keycloak.token)
-                            .catch((error) => error)
-                    );
-                });
-                const responses = await Promise.all(promises);
-                const errorMessages = responses
-                    .filter((response) => response instanceof Error)
-                    .map((error) => error.message);
-                if (errorMessages.length) {
-                    throw Error(errorMessages.join('; '));
-                }
-                this.setState(
-                    {
-                        selected: [],
-                        isLoading: false,
-                    },
-                    () => {
-                        this.refreshList();
-                    }
-                );
-            }
-        } catch (error) {
-            this.handleBackendError('Deletion failed:', error.message);
-        }
-    };
 
     handleBackendError = (title, message) => {
         this.setState({
@@ -203,7 +138,7 @@ class User extends React.Component {
     render() {
         const { classes } = this.props;
         const {
-            tunnels,
+            users,
             selected,
             order,
             isLoading,
@@ -286,55 +221,29 @@ class User extends React.Component {
                                             direction={order}
                                         // onClick={this.handleRequestSort}
                                         >
-                                            Tunnels Agents
+                                            ID
                                         </TableSortLabel>
 
                                     </Tooltip>
                                 </TableCell>
                                 <TableCell sortDirection={order}>
-                                    <Tooltip
-                                        title={order === 'desc' ? 'descending' : 'ascending'}
-                                        placement="bottom-start"
-                                        enterDelay={500}
-                                    >
-                                        <TableSortLabel
-                                            active
-                                            direction={order}
-                                        // onClick={this.handleRequestSort}
-                                        >
-                                            IP
-                                        </TableSortLabel>
-
-                                    </Tooltip>
+                                    Username
                                 </TableCell>
                                 <TableCell sortDirection={order}>
-                                    Region
-                                </TableCell>
-                                <TableCell sortDirection={order}>
-                                    OS
-                                </TableCell>
-                                <TableCell sortDirection={order}>
-                                    Started at
-                                </TableCell>
-                                <TableCell sortDirection={order}>
-                                    Version
-                                </TableCell>
-                                <TableCell sortDirection={order}>
-                                    Metadata
+                                    Policy
                                 </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {map(tunnels['data'], (tunnel) => {
-                                const isSelected = indexOf(selected, tunnel.name) !== -1;
+                            {map(users['data'], (user) => {
                                 return (
                                     <TableRow
                                         hover
                                         role="checkbox"
-                                        aria-checked={isSelected}
+                                        aria-checked={false}
                                         tabIndex={-1}
-                                        key={tunnel.name}
-                                        selected={isSelected}
+                                        key={user.ID}
+                                        selected={false}
                                     >
                                         {/* <TableCell padding="none" className={classes.checkboxCell}>
                                             <Checkbox
@@ -345,61 +254,28 @@ class User extends React.Component {
 
                                         <TableCell>
                                             <span
-                                                onClick={this.handleClickNavigate(
-                                                    `/schedules/browser/${tunnel.name}`
-                                                )}
+                                                // onClick={this.handleClickNavigate(
+                                                //     `/schedules/browser/${tunnel.name}`
+                                                // )}
                                                 className={classes.link}
                                             >
-                                                {tunnel.ID}
+                                                {user.ID}
                                             </span>
                                         </TableCell>
                                         <TableCell>
                                             <span
                                                 className={classes.link}
                                             >
-                                                {tunnel.ip}
+                                                {user.username}
                                             </span>
                                         </TableCell>
                                         <TableCell>
                                             <span
                                                 className={classes.link}
                                             >
-                                                {tunnel.region}
+                                                {JSON.stringify( user.userRemotePolicy)}
                                             </span>
-                                        </TableCell>
-                                        <TableCell>
-                                            <span
-                                                className={classes.link}
-                                            >
-                                                {tunnel.os}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell>
-                                            <span
-                                                className={classes.link}
-                                            >
-                                                {tunnel.startedAt
-                                                }
-                                            </span>
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <span
-                                                className={classes.link}
-                                            >
-                                                {tunnel.version
-                                                }
-                                            </span>
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <span
-                                                className={classes.link}
-                                            >
-                                                {tunnel.metadata
-                                                }
-                                            </span>
-                                        </TableCell>
+                                        </TableCell> 
                                     </TableRow>
                                 );
                             })}

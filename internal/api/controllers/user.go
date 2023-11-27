@@ -21,8 +21,17 @@ type UserController struct {
 // @Success 200 {string} pong
 // @Router /health/ping [get]
 func (h *UserController) GetAllUsers(c *gin.Context) {
+	getUsers, err := h.StoreInterface.GetUser(c.GetString("userid"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"data":   err.Error(),
+		})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "pong",
+		"status": "success",
+		"data":   getUsers,
 	})
 }
 
