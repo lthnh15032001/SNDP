@@ -15,6 +15,8 @@ import (
 type Claims struct {
 	ResourceAccess client `json:"resource_access,omitempty"`
 	JTI            string `json:"jti,omitempty"`
+	Email          string `json:"email"`
+	Sub            string `json:"sub"`
 }
 
 type client struct {
@@ -39,7 +41,7 @@ func AuthMiddleware(role string) gin.HandlerFunc {
 		config := config.GetConfig()
 		issuerUrl := config.GetString(constants.ENV_OIDC_ISSUER_URL)
 		clientID := config.GetString(constants.ENV_OIDC_CLIENT_ID)
-
+		// serverSession := sessions.Default(c)
 		rawAccessToken := c.Request.Header.Get("Authorization")
 		tr := &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -72,14 +74,27 @@ func AuthMiddleware(role string) gin.HandlerFunc {
 			authorisationFailed("claims : "+err.Error(), c)
 			return
 		}
+
 		//checking the roles
 		user_access_roles := IDTokenClaims.ResourceAccess.SNDPServiceClient.Roles
+		subject := IDTokenClaims.Sub
+		email := IDTokenClaims.Email
+		// if serverSession.Get("email") != email {
+		// 	serverSession.Set("email", email)
+		// }
+		// if serverSession.Get("userId") != email {
+		// 	serverSession.Set("userId", subject)
+		// }
+		// serverSession.Save()
+		c.Set("email", email)
+		c.Set("userid", subject)
 		for _, b := range user_access_roles {
 			if b == role {
 				c.Next()
 				return
 			}
 		}
+		// serverSession.Clear()
 
 		authorisationFailed("user not allowed to access this api", c)
 	}

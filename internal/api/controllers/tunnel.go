@@ -22,8 +22,8 @@ func (h *TunnelController) AddTunnel(c *gin.Context) {
 	m := AddTunnelDTO{}
 	if err := c.ShouldBindJSON(&m); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "error",
-			"message": err.Error(),
+			"status": "error",
+			"data":   err.Error(),
 		})
 		return
 	}

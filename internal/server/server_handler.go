@@ -174,7 +174,6 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 		ipAddr = req.RemoteAddr
 	}
 	uuidV4, _ := uuid.NewRandom()
-	fmt.Printf("uuidv4 add %s", uuidV4)
 
 	tunnelAgentModel := models.TunnelAgentModel{
 		ID:           uuidV4.String(),
@@ -186,7 +185,9 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 		OS:           req.Header.Get("X-Runtime"),
 		Metadata:     fmt.Sprintf("%+v", c.Remotes),
 		Status:       1,
+		UserRemoteId: user.Name,
 	}
+	fmt.Printf("%+v", tunnelAgentModel)
 	err = s.sc.AddTunnel(tunnelAgentModel)
 	err = eg.Wait()
 	if err != nil && !strings.HasSuffix(err.Error(), "EOF") {

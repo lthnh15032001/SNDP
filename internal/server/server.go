@@ -166,7 +166,7 @@ func (s *Server) Start(host, port string) error {
 func (s *Server) StartContext(ctx context.Context, host, port string) error {
 	s.Infof("Fingerprint %s", s.fingerprint)
 	var err error
-	s.sc, err = store.GetOnce()
+	s.sc, _, err = store.GetOnce()
 	if err != nil {
 		return err
 	}

@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	gormsessions "github.com/gin-contrib/sessions/gorm"
 	"github.com/gin-gonic/gin"
 	"github.com/lthnh15032001/ngrok-impl/docs"
 	"github.com/lthnh15032001/ngrok-impl/internal/api/config"
@@ -12,18 +14,22 @@ import (
 	"github.com/lthnh15032001/ngrok-impl/internal/store"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"gorm.io/gorm"
 )
 
 func Init(errChan chan error) (bool error) {
 	var err error
+	var db *gorm.DB
 	var scInterface store.Interface
 	config := config.GetConfig()
-	scInterface, err = store.GetOnce()
+	scInterface, db, err = store.GetOnce()
+	gs := gormsessions.NewStore(db, true, []byte("secret"))
 	if err != nil {
 		errChan <- err
 	}
-	router := gin.Default()
 
+	router := gin.Default()
+	router.Use(sessions.Sessions("api-session-storage", gs))
 	configCors := cors.DefaultConfig()
 	configCors.AllowOrigins = []string{"*"}
 
@@ -58,8 +64,8 @@ func Init(errChan chan error) (bool error) {
 			StoreInterface: scInterface,
 		}
 
-		user.GET("/", middlewares.AuthMiddleware("getUsers"), userController.GetAllUsers)
-		user.POST("/", userController.GetAllUsers)
+		user.GET("/", middlewares.AuthMiddleware("get-user"), userController.GetAllUsers)
+		user.POST("/", middlewares.AuthMiddleware("add-user"), userController.AddUserAuthen)
 	}
 
 	tunnel := router.Group("tunnel")

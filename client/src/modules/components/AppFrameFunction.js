@@ -10,6 +10,7 @@ import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 
 import PolicyIcon from '@material-ui/icons/LibraryBooks';
+import SupervisedUserCircle from '@material-ui/icons/SupervisedUserCircle';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 
 // Lodash
@@ -32,15 +33,21 @@ import Divider from '@material-ui/core/Divider';
 const drawerWidth = 280;
 
 const links = [
+  // {
+  //   primary: 'Schedules',
+  //   path: '/schedules/browser',
+  //   icon: <ScheduleIcon />,
+  // },
+  // {
+  //   primary: 'Policies',
+  //   path: '/policies/browser',
+  //   icon: <PolicyIcon />,
+  // },
+
   {
-    primary: 'Schedules',
-    path: '/schedules/browser',
-    icon: <ScheduleIcon />,
-  },
-  {
-    primary: 'Policies',
-    path: '/policies/browser',
-    icon: <PolicyIcon />,
+    primary: 'Users',
+    path: '/users/',
+    icon: <SupervisedUserCircle />,
   },
   {
     primary: 'Tunnels',

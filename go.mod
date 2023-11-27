@@ -7,6 +7,7 @@ require (
 	github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 	github.com/eclipse/paho.mqtt.golang v1.4.3
 	github.com/gin-contrib/cors v1.4.0
+	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.1
 	github.com/google/uuid v1.4.0
 	github.com/gorilla/websocket v1.5.0
@@ -32,16 +33,20 @@ require (
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/gorilla/context v1.1.1 // indirect
+	github.com/gorilla/securecookie v1.1.1 // indirect
+	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jpillora/ansi v1.0.3 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
-	github.com/mattn/go-sqlite3 v1.14.17 // indirect
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pquerna/cachecontrol v0.2.0 // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
+	github.com/wader/gormstore/v2 v2.0.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

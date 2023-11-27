@@ -10,4 +10,6 @@ type Interface interface {
 	ChangeTunnelStatus(uuid string) error
 	GetTunnelActive() (*[]models.TunnelAgentModel, error)
 	DeleteTunnel(uuid string) error
+
+	AddUser(user models.UserModel) error
 }

@@ -4,7 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/lthnh15032001/ngrok-impl/internal/models"
 	"github.com/lthnh15032001/ngrok-impl/internal/store"
+	"gorm.io/datatypes"
 )
 
 type UserController struct {
@@ -23,8 +26,40 @@ func (h *UserController) GetAllUsers(c *gin.Context) {
 	})
 }
 
-func (h *UserController) AddUser(c *gin.Context) {
+type AddUserDTO struct {
+	*models.UserModel
+}
+
+func (h *UserController) AddUserAuthen(c *gin.Context) {
+	m := AddUserDTO{}
+
+	if err := c.ShouldBindJSON(&m); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"data":   err.Error(),
+		})
+		return
+	}
+	uuidV4, _ := uuid.NewRandom()
+
+	sInterface := h.StoreInterface
+	s := models.UserModel{
+		ID:               uuidV4.String(),
+		UserId:           c.GetString("userid"),
+		Username:         m.Username,
+		Password:         m.Password,
+		UserRemotePolicy: datatypes.JSON(m.UserRemotePolicy),
+	}
+	err := sInterface.AddUser(s)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"data":   err.Error(),
+		})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "pong",
+		"status": "success",
+		"data":   s,
 	})
 }

@@ -1,6 +1,7 @@
 package store
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 
@@ -12,6 +13,22 @@ import (
 
 type Storage struct {
 	db *gorm.DB
+}
+
+// AddUser implements Interface.
+func (c *Storage) AddUser(user models.UserModel) error {
+
+	var checkUser models.UserModel
+
+	result := c.db.Where("username = ?", user.Username).Where("user_id = ?", user.UserId).First(&checkUser)
+	if result.RowsAffected != 0 {
+		// The UserModel does not exist, you might want to handle this case
+		return errors.New("UserModel existed")
+	}
+	if err := c.db.Create(&user).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 // DeleteTunnel implements Interface.
@@ -53,13 +70,13 @@ func (c *Storage) AddTunnel(tunnel models.TunnelAgentModel) error {
 var modelStorage *Storage
 var muModelStorage sync.Mutex
 
-func GetOnce() (Interface, error) {
+func GetOnce() (Interface, *gorm.DB, error) {
 	muModelStorage.Lock()
 	defer func() {
 		muModelStorage.Unlock()
 	}()
 	if modelStorage != nil {
-		return modelStorage, nil
+		return modelStorage, nil, nil
 	}
 	dbType := os.GetEnv("ENV_DB_TYPE", "mysql")
 	host := os.GetEnv("ENV_DB_HOST", "localhost")
@@ -69,20 +86,21 @@ func GetOnce() (Interface, error) {
 	switch dbType {
 	case "mysql":
 		db, err := NewMySQLDB(host, user, password, dbName)
+
 		if err != nil {
 			fmt.Printf("err mysql %v\n", err)
-			return nil, err
+			return nil, db, err
 		}
 		store := New(db)
-		return store, nil
+		return store, db, nil
 	default:
 		db, err := NewSqliteDB()
 		if err != nil {
 			fmt.Printf("err sqlite %v/n", err)
-			return nil, err
+			return nil, nil, err
 		}
 		store := New(db)
-		return store, nil
+		return store, db, nil
 	}
 }
 

@@ -21,6 +21,7 @@ func NewMySQLDB(host string, user string, password string, dbName string) (*gorm
 	log.Printf("Successfuly Connect %s:@tcp(%s:3306)/%s\n", user, host, dbName)
 	if err := db.AutoMigrate(
 		&models.TunnelAgentModel{},
+		&models.UserModel{},
 	); err != nil {
 		return db, err
 	}
