@@ -31,6 +31,8 @@ The command runs a server on port 8081, which is responsible for hosting a serve
    ```
   ex: `./SNDP client localhost:8081 R:55555:localhost:5555`
 The command runs a client that connects to the above server and streams TCP data from localhost on port 5555 to port 55555 on the server.  For additional command customization, check out [chisel](https://github.com/jpillora/chisel)
+
+
 **3. API**
    Make sure you have a database and keycloak by running `docker-compose up --d` (currently support `mysql` and `sqlite`), change connection information for adapting your requirement, we assume that keycloak running local at port `8080` and database mysql's port `3306` 
 
@@ -56,6 +58,8 @@ Keycloak github identity provider setting:
     ./SNDP server api --e [dev|release]
    ```
    Default API running on port `9080`
+
+   
 **4. Dashboard**
    ```
     cd client
