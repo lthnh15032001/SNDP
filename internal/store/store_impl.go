@@ -9,14 +9,35 @@ import (
 	"github.com/lthnh15032001/ngrok-impl/internal/os"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Storage struct {
 	db *gorm.DB
 }
 
+// GetUserACL implements Interface.
+func (c *Storage) GetUserACL(userId string, id string) (*models.UserModel, error) {
+	var r models.UserModel
+	query := c.db.Model(&models.UserModel{}).Where("user_id = ?", userId).Where("id", id)
+	if err := query.Find(&r).Error; err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
+
+// DeleteUser implements Interface.
+func (c *Storage) DeleteUserACL(id string) error {
+	r := models.UserModel{}
+	query := c.db.Model(&models.UserModel{}).Where("id = ?", id)
+	if err := query.Delete(&r).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetUser implements Interface.
-func (c *Storage) GetUser(userId string) (*[]models.UserModel, error) {
+func (c *Storage) GetAllUsersACL(userId string) (*[]models.UserModel, error) {
 	var r []models.UserModel
 	query := c.db.Model(&models.UserModel{}).Where("user_id = ?", userId)
 	if err := query.Find(&r).Error; err != nil {
@@ -26,7 +47,7 @@ func (c *Storage) GetUser(userId string) (*[]models.UserModel, error) {
 }
 
 // AddUser implements Interface.
-func (c *Storage) AddUser(user models.UserModel) error {
+func (c *Storage) AddUserACL(user models.UserModel) error {
 
 	var checkUser models.UserModel
 
@@ -36,6 +57,25 @@ func (c *Storage) AddUser(user models.UserModel) error {
 		return errors.New("UserModel existed")
 	}
 	if err := c.db.Create(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// AddUser implements Interface.
+func (c *Storage) EditUserACL(id string, user models.UserModel) error {
+
+	var checkUser models.UserModel
+
+	result := c.db.Where("ID = ?", id).Where("user_id = ?", user.UserId).First(&checkUser)
+	if result.RowsAffected == 0 {
+		// The UserModel does not exist, you might want to handle this case
+		return errors.New("User not existed")
+	}
+	if err := c.db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "user_id"}, {Name: "ID"}},
+		DoUpdates: clause.AssignmentColumns([]string{"username", "password", "user_remote_policy"}),
+	}).Updates(&user).Error; err != nil {
 		return err
 	}
 	return nil

@@ -67,6 +67,8 @@ func NewServer(c *Config) (*Server, error) {
 	server.Info = true
 	server.Debug = true
 	server.users = settings.NewUserIndex(server.Logger)
+
+	// auth user from a file => auth user ACL from database
 	if c.AuthFile != "" {
 		if err := server.users.LoadUsers(c.AuthFile); err != nil {
 			return nil, err

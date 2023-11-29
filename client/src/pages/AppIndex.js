@@ -31,6 +31,7 @@ import Policy from './Policy/Policy';
 import PolicyList from './Policy/PolicyList';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 import keycloak from '../keycloak';
+import UserEdit from './User/UserEdit';
 const styles = (theme) => ({
   '@global': {
     'html, body, #root': {
@@ -82,6 +83,11 @@ class Index extends React.Component {
             
             <Route exact path="/users" component={User} />
             <Route exact path="/users/create" component={UserCreate} />
+            <Route
+              exact
+              path="/users/edit/:id"
+              component={UserEdit}
+            />
 
             <Route exact path="/schedules/create" component={ScheduleCreate} />
             <Route exact path="/schedules/browser" component={ScheduleList} />

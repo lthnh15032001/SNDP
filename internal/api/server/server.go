@@ -65,7 +65,10 @@ func Init(errChan chan error) (bool error) {
 		}
 
 		user.GET("/", middlewares.AuthMiddleware("get-user"), userController.GetAllUsers)
+		user.GET("/:id", middlewares.AuthMiddleware("get-user"), userController.GetUser)
 		user.POST("/", middlewares.AuthMiddleware("add-user"), userController.AddUserAuthen)
+		user.PATCH("/:id", middlewares.AuthMiddleware("edit-user"), userController.EditUserAuthen)
+		user.DELETE("/", middlewares.AuthMiddleware("delete-user"), userController.DeleteUserAuthen)
 	}
 
 	tunnel := router.Group("tunnel")
@@ -97,7 +100,7 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)

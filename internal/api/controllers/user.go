@@ -21,7 +21,7 @@ type UserController struct {
 // @Success 200 {string} pong
 // @Router /health/ping [get]
 func (h *UserController) GetAllUsers(c *gin.Context) {
-	getUsers, err := h.StoreInterface.GetUser(c.GetString("userid"))
+	getUsers, err := h.StoreInterface.GetAllUsersACL(c.GetString("userid"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
@@ -32,6 +32,22 @@ func (h *UserController) GetAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
 		"data":   getUsers,
+	})
+}
+
+func (h *UserController) GetUser(c *gin.Context) {
+	id := c.Param("id")
+	getUser, err := h.StoreInterface.GetUserACL(c.GetString("userid"), id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"data":   err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data":   getUser,
 	})
 }
 
@@ -59,7 +75,7 @@ func (h *UserController) AddUserAuthen(c *gin.Context) {
 		Password:         m.Password,
 		UserRemotePolicy: datatypes.JSON(m.UserRemotePolicy),
 	}
-	err := sInterface.AddUser(s)
+	err := sInterface.AddUserACL(s)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
@@ -71,4 +87,62 @@ func (h *UserController) AddUserAuthen(c *gin.Context) {
 		"status": "success",
 		"data":   s,
 	})
+}
+
+func (h *UserController) EditUserAuthen(c *gin.Context) {
+	m := AddUserDTO{}
+	id := c.Param("id")
+	if err := c.ShouldBindJSON(&m); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"data":   err.Error(),
+		})
+		return
+	}
+
+	sInterface := h.StoreInterface
+	s := models.UserModel{
+		ID:               id,
+		UserId:           c.GetString("userid"),
+		Username:         m.Username,
+		Password:         m.Password,
+		UserRemotePolicy: datatypes.JSON(m.UserRemotePolicy),
+	}
+	err := sInterface.EditUserACL(id, s)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"data":   err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data":   s,
+	})
+}
+
+func (h *UserController) DeleteUserAuthen(c *gin.Context) {
+	sInterface := h.StoreInterface
+	id, ok := c.GetQuery("id")
+	if id == "" && ok == false {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"data":   "Missing id",
+		})
+		return
+	}
+	err := sInterface.DeleteUserACL(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"data":   err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data":   " s",
+	})
+	return
 }

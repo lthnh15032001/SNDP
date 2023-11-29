@@ -134,7 +134,39 @@ class User extends React.Component {
             isLoading: false,
         });
     };
+    handleDeleteClick = async (id) => {
+        try {
+            const { selected } = this.state;
+            const { keycloak } = this.props;
 
+            const promises = [
+                this.userService
+                    .delete(id, keycloak.token)
+                    .catch((error) => error)
+            ];
+            this.setState({ isLoading: true });
+            const responses = await Promise.all(promises);
+            const errorMessages = responses
+                .filter((response) => response instanceof Error)
+                .map((error) => error.message);
+            if (errorMessages.length) {
+                throw Error(errorMessages.join('; '));
+            }
+            this.setState(
+                {
+                    selected: [],
+                    isLoading: false,
+                },
+                () => {
+                    this.refreshList();
+                }
+            );
+        } catch (error) {
+            this.handleBackendError('Deletion failed:', error.message);
+        }
+    };
+
+    
     render() {
         const { classes } = this.props;
         const {
@@ -169,28 +201,7 @@ class User extends React.Component {
                         <RefreshIcon className={classes.leftIcon} />
                         Refresh
                     </Button>
-                    <Button
-                        className={classes.button}
-                        color="primary"
-                        size="small"
-                        disabled={selected.length !== 1}
-                        onClick={this.handleClickNavigate(
-                            `/schedules/browser/${selected[0]}`
-                        )}
-                    >
-                        <EditIcon className={classes.leftIcon} />
-                        Edit
-                    </Button>
-                    <Button
-                        className={classes.button}
-                        color="primary"
-                        size="small"
-                        disabled={selected.length < 1}
-                        onClick={this.handleDeleteClick}
-                    >
-                        <DeleteIcon className={classes.leftIcon} />
-                        Delete
-                    </Button>
+
                 </AppPageActions>
 
                 <AppPageContent
@@ -231,6 +242,9 @@ class User extends React.Component {
                                 </TableCell>
                                 <TableCell sortDirection={order}>
                                     Policy
+                                </TableCell>
+                                <TableCell sortDirection={order}>
+
                                 </TableCell>
                             </TableRow>
                         </TableHead>
@@ -273,9 +287,31 @@ class User extends React.Component {
                                             <span
                                                 className={classes.link}
                                             >
-                                                {JSON.stringify( user.userRemotePolicy)}
+                                                {JSON.stringify(user.userRemotePolicy)}
                                             </span>
-                                        </TableCell> 
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button
+                                                className={classes.button}
+                                                color="primary"
+                                                size="small"
+                                                onClick={this.handleClickNavigate(
+                                                    `/users/edit/${user.ID}`
+                                                )}
+                                            >
+                                                <EditIcon className={classes.leftIcon} />
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                className={classes.button}
+                                                color="primary"
+                                                size="small"
+                                                onClick={() => this.handleDeleteClick(user.ID)}
+                                            >
+                                                <DeleteIcon className={classes.leftIcon} />
+                                                Delete
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 );
                             })}

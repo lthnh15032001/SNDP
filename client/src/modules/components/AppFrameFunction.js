@@ -90,6 +90,11 @@ const styles = (theme) => ({
   drawerDocked: {
     height: '100%',
   },
+  sidebar: {
+    width: drawerWidth,
+    height: '100%',
+    backgroundColor: '#21214c'
+  },
   content: {
     backgroundColor: theme.palette.grey,
     width: '100%',
@@ -123,16 +128,6 @@ function AppFrame(props) {
 
   const classes = props.classes;
   const children = props.children;
-  // return (
-  //   <div className={classes.root}>
-  //     <ResponsiveAppBar
-  //       title={title}
-  //       onClickLink={handleClickLink}
-  //       links={links}
-  //     />
-  //     <main className={classes.content}>{children}</main>
-  //   </div>
-  // );
   const toggleDrawer = (open) => (event) => {
     if (
       event.type === 'keydown' &&
@@ -143,18 +138,39 @@ function AppFrame(props) {
     setDrawerOpen(open);
   };
   const drawer = (
-    <div style={{width: drawerWidth}}>
+    <div className={classes.sidebar}>
       <List dense disablePadding>
         {map(links, (page, _) => (
-          <ListItem key={page.primary} button onClick={handleClickLink(page)}>
-            <ListItemButton>
-              <ListItemIcon>{page.icon}</ListItemIcon>
-              <ListItemText primary={page.primary} />
+          <ListItem
+            disableGutters
+            key={page.primary}
+            style={{
+              paddingLeft: 6,
+              paddingRight: 6,
+            }}
+            button onClick={handleClickLink(page)}
+          >
+            <ListItemButton disablePadding style={{
+              color: 'white',
+              backgroundColor: title === page.primary && '#1677ff',
+              borderRadius: 8,
+            }}>
+              <ListItemText
+             
+                primary={
+                  <div style={{
+                    fontWeight: 600
+                  }}>
+                    {page.primary}
+                  </div>
+                }
+              />
             </ListItemButton>
+
           </ListItem>
         ))}
       </List>
-      <Divider />
+      {/* <Divider style={{ backgroundColor: 'white' }} /> */}
     </div>
   );
 
@@ -170,13 +186,13 @@ function AppFrame(props) {
           {drawer}
         </Drawer>
 
-        <main  className={classes.content}>
+        <main className={classes.content}>
           <ResponsiveAppBar
             title={title}
             onClickLink={handleClickLink}
             links={links}
           />
-          <div style={{ maxWidth: 1200, margin: '0 auto'}}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             {children}
           </div>
         </main>

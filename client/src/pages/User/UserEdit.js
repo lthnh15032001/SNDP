@@ -35,7 +35,7 @@ const styles = (theme) => ({
     },
 });
 
-class UserCreate extends React.Component {
+class UserEdit extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -61,14 +61,24 @@ class UserCreate extends React.Component {
     }
 
     async componentDidMount() {
-        const { keycloak } = this.props;
+        const { match, keycloak } = this.props;
         try {
-            // this.setState({ isLoading: true });
-            // const response = await this.scheduleService.timezones(keycloak.token);
-            // this.setState({
-            //   timezones: response.Timezones,
-            //   isLoading: false,
-            // });
+            const id = match.params.id
+            this.setState({ isLoading: true });
+            const response = await this.userService.getUser(id, keycloak.token);
+            const data = response.data
+            this.setState({
+                user: {
+                    username: data.username,
+                    password: data.password
+                },
+                policy: data.userRemotePolicy.map((x) => {
+                    return {
+                        txt: x
+                    }
+                }),
+                isLoading: false,
+            });
         } catch (error) {
             this.handleBackendError(
                 'Loading timezones failed:',
@@ -83,9 +93,9 @@ class UserCreate extends React.Component {
         user[name] = event.target.value;
         this.setState({ user });
     };
-    handleCreate = async (event) => {
+    handleEdit = async (event) => {
         try {
-            const { history, keycloak } = this.props;
+            const { history, keycloak, match } = this.props;
             const { user, policy } = this.state;
             const nameRe = /^[a-zA-Z][\w-]*[a-zA-Z0-9]$/;
             if (!nameRe.test(user.username)) {
@@ -100,7 +110,7 @@ class UserCreate extends React.Component {
                 password: user.password,
                 userRemotePolicy: policy.map(x => x['txt'])
             }
-            await this.userService.create(userCreateDTO, keycloak.token);
+            await this.userService.edit(userCreateDTO, match.params.id, keycloak.token);
             this.setState({ isLoading: false });
             history.push('/users');
         } catch (error) {
@@ -184,7 +194,7 @@ class UserCreate extends React.Component {
                         <ArrowBackIcon />
                     </IconButton>
                     <Typography variant="subtitle1" color="primary">
-                        Create User
+                        Edit
                     </Typography>
                 </AppPageActions>
 
@@ -255,9 +265,9 @@ class UserCreate extends React.Component {
                         variant="contained"
                         color="primary"
                         size="small"
-                        onClick={this.handleCreate}
+                        onClick={this.handleEdit}
                     >
-                        Create
+                        Edit
                     </Button>
                     <Button
                         className={classes.button}
@@ -274,4 +284,4 @@ class UserCreate extends React.Component {
     }
 }
 
-export default compose(withStyles(styles), withKeycloak)(UserCreate);
+export default compose(withStyles(styles), withKeycloak)(UserEdit);
