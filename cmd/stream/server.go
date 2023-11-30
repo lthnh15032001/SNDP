@@ -34,6 +34,7 @@ func newServerTCPCommand() *cobra.Command {
 	clientCmd.Flags().StringVar(&config.KeyFile, "keyfile", "", "")
 	clientCmd.Flags().StringVar(&config.AuthFile, "authfile", "", "")
 	clientCmd.Flags().StringVar(&config.Auth, "auth", "", "")
+	clientCmd.Flags().BoolVar(&config.WithDBAuth, "withdbauth", false, "")
 	clientCmd.Flags().DurationVar(&config.KeepAlive, "keepalive", 25*time.Second, "")
 	clientCmd.Flags().StringVar(&config.Proxy, "proxy", "", "")
 	clientCmd.Flags().StringVar(&config.Proxy, "backend", "", "")
@@ -153,6 +154,9 @@ func serverTCP(args []string, flags *pflag.FlagSet, config *chserver.Config) {
 	}
 
 	s, err := chserver.NewServer(config)
+	if config.WithDBAuth {
+		s.Infof("User authentication with database enabled")
+	}
 	if err != nil {
 		log.Fatal(err)
 	}

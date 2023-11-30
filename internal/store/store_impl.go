@@ -16,6 +16,16 @@ type Storage struct {
 	db *gorm.DB
 }
 
+// CheckUserExist implements Interface.
+func (c *Storage) CheckUserExist(username string, userId string) (*models.UserModel, error) {
+	var r models.UserModel
+	query := c.db.Model(&models.UserModel{}).Where("username", username).Where("user_id = ?", userId)
+	if err := query.Find(&r).Error; err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
+
 // GetUserACL implements Interface.
 func (c *Storage) GetUserACL(userId string, id string) (*models.UserModel, error) {
 	var r models.UserModel
@@ -159,93 +169,3 @@ func New(db *gorm.DB) Interface {
 		db,
 	}
 }
-
-// func (c *Storage) SavePolicy(m models.Policy) error {
-
-// 	if err := c.db.Clauses(clause.OnConflict{
-// 		Columns:   []clause.Column{{Name: "name"}},
-// 		DoUpdates: clause.AssignmentColumns([]string{"name", "display_name", "projects", "tags", "schedule_name", "provider"}),
-// 	}).Create(&m).Error; err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
-// func (c *Storage) GetPolicyByName(name string) (*models.Policy, error) {
-// 	r := models.Policy{}
-// 	query := c.db.Model(&models.Policy{}).Where("name=?", name)
-// 	if err := query.First(&r).Error; err != nil {
-// 		return nil, err
-// 	}
-// 	return &r, nil
-// }
-
-// func (c *Storage) GetPolicyBySchedule(name string) (*[]models.Policy, error) {
-// 	var r []models.Policy
-// 	query := c.db.Model(&models.Policy{}).Where("schedule_name=?", name)
-// 	if err := query.Find(&r).Error; err != nil {
-// 		return nil, err
-// 	}
-// 	return &r, nil
-// }
-
-// func (c *Storage) ListPolicy() (*[]models.Policy, error) {
-// 	var r []models.Policy
-// 	if err := c.db.Find(&r).Error; err != nil {
-// 		return nil, err
-// 	}
-// 	return &r, nil
-// }
-
-// func (c *Storage) ListPolicyByProvider(name string) (*[]models.Policy, error) {
-// 	var r []models.Policy
-// 	if err := c.db.Where("name <> ?", name).Find(&r).Error; err != nil {
-// 		return nil, err
-// 	}
-// 	return &r, nil
-// }
-
-// func (c *Storage) DeletePolicy(name string) error {
-// 	r := models.Policy{}
-// 	query := c.db.Model(&models.Policy{}).Where("name=?", name)
-// 	if err := query.Delete(&r).Error; err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
-// func (c *Storage) SaveSchedule(m models.ScheduleModel) error {
-// 	if err := c.db.Clauses(clause.OnConflict{
-// 		Columns:   []clause.Column{{Name: "name"}},
-// 		DoUpdates: clause.AssignmentColumns([]string{"name", "display_name", "time_zone", "schedule"}),
-// 	}).Create(&m).Error; err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
-// func (c *Storage) GetSchedule(name string) (*models.ScheduleModel, error) {
-// 	r := models.ScheduleModel{}
-// 	query := c.db.Model(&models.ScheduleModel{}).Where("name = ?", name)
-// 	if err := query.Find(&r).Error; err != nil {
-// 		return nil, err
-// 	}
-// 	return &r, nil
-// }
-
-// func (c *Storage) ListSchedule() (*[]models.ScheduleModel, error) {
-// 	var r []models.ScheduleModel
-// 	if err := c.db.Find(&r).Error; err != nil {
-// 		return nil, err
-// 	}
-// 	return &r, nil
-// }
-
-// func (c *Storage) DeleteSchedule(name string) error {
-// 	r := models.ScheduleModel{}
-// 	query := c.db.Model(&models.ScheduleModel{}).Where("name=?", name)
-// 	if err := query.Delete(&r).Error; err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }

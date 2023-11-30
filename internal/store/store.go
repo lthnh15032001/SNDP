@@ -12,8 +12,10 @@ type Interface interface {
 	DeleteTunnel(uuid string) error
 
 	AddUserACL(user models.UserModel) error
-	GetAllUsersACL(userid string) (*[]models.UserModel, error)
-	GetUserACL(userid string, id string) (*models.UserModel, error)
+	GetAllUsersACL(userId string) (*[]models.UserModel, error)
+	GetUserACL(userId string, id string) (*models.UserModel, error)
 	DeleteUserACL(userid string) error
 	EditUserACL(id string, user models.UserModel) error
+
+	CheckUserExist(username string, userId string) (*models.UserModel, error)
 }

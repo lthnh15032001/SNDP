@@ -2,6 +2,7 @@ package chserver
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -25,15 +26,16 @@ import (
 
 // Config is the configuration for the chisel service
 type Config struct {
-	KeySeed   string
-	KeyFile   string
-	AuthFile  string
-	Auth      string
-	Proxy     string
-	Socks5    bool
-	Reverse   bool
-	KeepAlive time.Duration
-	TLS       TLSConfig
+	KeySeed    string
+	KeyFile    string
+	AuthFile   string
+	Auth       string
+	Proxy      string
+	Socks5     bool
+	Reverse    bool
+	KeepAlive  time.Duration
+	TLS        TLSConfig
+	WithDBAuth bool
 }
 
 // Server respresent a chisel service
@@ -67,21 +69,22 @@ func NewServer(c *Config) (*Server, error) {
 	server.Info = true
 	server.Debug = true
 	server.users = settings.NewUserIndex(server.Logger)
-
-	// auth user from a file => auth user ACL from database
-	if c.AuthFile != "" {
-		if err := server.users.LoadUsers(c.AuthFile); err != nil {
-			return nil, err
+	// if db auth user acl then lookup user to authen user, else load user from file, default is non authen
+	if !c.WithDBAuth {
+		// auth user from a file => auth user ACL from database
+		if c.AuthFile != "" {
+			if err := server.users.LoadUsers(c.AuthFile); err != nil {
+				return nil, err
+			}
+		}
+		if c.Auth != "" {
+			u := &settings.User{Addrs: []*regexp.Regexp{settings.UserAllowAll}}
+			u.Name, u.Pass = settings.ParseAuth(c.Auth)
+			if u.Name != "" {
+				server.users.AddUser(u)
+			}
 		}
 	}
-	if c.Auth != "" {
-		u := &settings.User{Addrs: []*regexp.Regexp{settings.UserAllowAll}}
-		u.Name, u.Pass = settings.ParseAuth(c.Auth)
-		if u.Name != "" {
-			server.users.AddUser(u)
-		}
-	}
-
 	var pemBytes []byte
 	var err error
 	if c.KeyFile != "" {
@@ -213,6 +216,28 @@ func (s *Server) GetFingerprint() string {
 
 // authUser is responsible for validating the ssh user / password combination
 func (s *Server) authUser(c ssh.ConnMetadata, password []byte) (*ssh.Permissions, error) {
+	if s.config.WithDBAuth {
+		sc := s.sc
+		//TODO: do authen for developer to get userId
+		checkUser, err := sc.CheckUserExist(c.User(), "fa99f65f-0542-47db-901f-0157b31f0d72")
+		if err != nil {
+			return nil, errors.New("Invalid authentication for username: %s")
+		}
+		if checkUser.Password != string(password) {
+			s.Debugf("Login failed for userss: %s", c.User())
+			return nil, errors.New("Invalid authentication for username: %s")
+		}
+		var policies []string
+		err = json.Unmarshal(checkUser.UserRemotePolicy, &policies)
+		if err != nil {
+			return nil, errors.New("Invalid authentication because of policies in wrong format for username: %s")
+		}
+		s.AddUser(checkUser.Username, checkUser.Password, policies...)
+		user, _ := s.users.Get(c.User())
+
+		s.sessions.Set(string(c.SessionID()), user)
+		return nil, nil
+	}
 	// check if user authentication is enabled and if not, allow all
 	if s.users.Len() == 0 {
 		return nil, nil
@@ -234,6 +259,7 @@ func (s *Server) authUser(c ssh.ConnMetadata, password []byte) (*ssh.Permissions
 func (s *Server) AddUser(user, pass string, addrs ...string) error {
 	authorizedAddrs := []*regexp.Regexp{}
 	for _, addr := range addrs {
+		s.Infof("addr", addr)
 		authorizedAddr, err := regexp.Compile(addr)
 		if err != nil {
 			return err
