@@ -30,7 +30,8 @@ var (
 )
 
 func Execute(ctx context.Context) error {
-	rootCmd.AddCommand(newAPICommand()) // new API server
+	rootCmd.AddCommand(newAPICommand())  // new API server
+	rootCmd.AddCommand(newAuthCommand()) // authen keycloak
 
 	rootCmd.AddCommand(newClientTCPCommand()) // client tcp streaming
 	rootCmd.AddCommand(newServerTCPCommand()) // server tcp streaming

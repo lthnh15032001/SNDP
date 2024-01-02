@@ -45,6 +45,11 @@ const links = [
   // },
 
   {
+    primary: 'Auth Token',
+    path: '/auth/',
+    icon: <SupervisedUserCircle />,
+  },
+  {
     primary: 'Users',
     path: '/users/',
     icon: <SupervisedUserCircle />,
@@ -145,21 +150,20 @@ function AppFrame(props) {
             disableGutters
             key={page.primary}
             style={{
-              paddingLeft: 6,
-              paddingRight: 6,
+              paddingLeft: 0,
+              paddingRight: 0,
             }}
             button onClick={handleClickLink(page)}
           >
             <ListItemButton disablePadding style={{
               color: 'white',
-              backgroundColor: title === page.primary && '#1677ff',
-              borderRadius: 8,
+              backgroundColor: title === page.primary && '#1853db',
             }}>
               <ListItemText
              
                 primary={
                   <div style={{
-                    fontWeight: 600
+                    fontWeight: title === page.primary ? 500 : 400
                   }}>
                     {page.primary}
                   </div>

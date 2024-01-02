@@ -23,6 +23,7 @@ import ScheduleCreate from './Schedule/ScheduleCreate';
 import ScheduleEdit from './Schedule/ScheduleEdit';
 
 import TunnelAgent from './Tunnels/Agents';
+import Auth from './Auth/Auth';
 
 import User from './User/User';
 import UserCreate from './User/UserCreate';
@@ -80,7 +81,9 @@ class Index extends React.Component {
               render={() => <Redirect to="/tunnels/agent" />}
             />
             <Route exact path="/tunnels/agent" component={TunnelAgent} />
-            
+
+            <Route exact path="/auth" component={Auth} />
+
             <Route exact path="/users" component={User} />
             <Route exact path="/users/create" component={UserCreate} />
             <Route
