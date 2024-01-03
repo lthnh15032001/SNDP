@@ -12,6 +12,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/user"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -68,6 +70,27 @@ type Client struct {
 	stop      func()
 	eg        *errgroup.Group
 	tunnel    *tunnel.Tunnel
+}
+
+func GetAuthConfig() (error, string) {
+	h := os.Getenv("HOME")
+	if h == "" {
+		if u, err := user.Current(); err == nil {
+			h = u.HomeDir
+		}
+	}
+	c := filepath.Join(h, ".sndp-credentials", "sndp")
+	// check folder exist then create
+	if _, err := os.Stat(filepath.Join(h, ".sndp-credentials")); errors.Is(err, os.ErrNotExist) {
+		if err != nil {
+			return err, ""
+		}
+	}
+	f, err := os.ReadFile(c)
+	if err != nil {
+		return err, ""
+	}
+	return nil, string(f)
 }
 
 // NewClient creates a new client instance
@@ -174,9 +197,14 @@ func NewClient(c *Config) (*Client, error) {
 		}
 	}
 	//ssh auth and config
-	user, pass := settings.ParseAuth(c.Auth)
+	username, pass := settings.ParseAuth(c.Auth)
+
+	err, userId := GetAuthConfig()
+	if err != nil {
+		return nil, fmt.Errorf("invalid Auth User Id (%s)", err)
+	}
 	client.sshConfig = &ssh.ClientConfig{
-		User:            user,
+		User:            fmt.Sprintf("%s.%s", username, userId),
 		Auth:            []ssh.AuthMethod{ssh.Password(pass)},
 		ClientVersion:   "SSH-" + chshare.ProtocolVersion + "-client",
 		HostKeyCallback: client.verifyServer,

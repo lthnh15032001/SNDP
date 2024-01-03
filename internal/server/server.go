@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/lthnh15032001/ngrok-impl/internal/store"
@@ -214,26 +215,36 @@ func (s *Server) GetFingerprint() string {
 	return s.fingerprint
 }
 
+func (s *Server) GetUsernameAndUserId(user string) (string, string) {
+	res1 := strings.Split(user, ".")
+	// if len(res1) != 2 {
+	// 	errors.New("invalid authentication for user: %s")
+	// }
+	return res1[0], res1[1]
+}
+
 // authUser is responsible for validating the ssh user / password combination
 func (s *Server) authUser(c ssh.ConnMetadata, password []byte) (*ssh.Permissions, error) {
+	// fmt.Printf("ccccccccccccccc %s", c.User())
+	username, userId := s.GetUsernameAndUserId(c.User())
 	if s.config.WithDBAuth {
 		sc := s.sc
 		//TODO: do authen for developer to get userId
-		checkUser, err := sc.CheckUserExist(c.User(), "fa99f65f-0542-47db-901f-0157b31f0d72")
+		checkUser, err := sc.CheckUserExist(username, userId)
 		if err != nil {
-			return nil, errors.New("Invalid authentication for username: %s")
+			return nil, errors.New("invalid authentication for username: %s")
 		}
 		if checkUser.Password != string(password) {
-			s.Debugf("Login failed for userss: %s", c.User())
-			return nil, errors.New("Invalid authentication for username: %s")
+			s.Debugf("Login failed for userss: %s", username)
+			return nil, errors.New("invalid authentication for username: %s")
 		}
 		var policies []string
 		err = json.Unmarshal(checkUser.UserRemotePolicy, &policies)
 		if err != nil {
-			return nil, errors.New("Invalid authentication because of policies in wrong format for username: %s")
+			return nil, errors.New("invalid authentication because of policies in wrong format for username: %s")
 		}
 		s.AddUser(checkUser.Username, checkUser.Password, policies...)
-		user, _ := s.users.Get(c.User())
+		user, _ := s.users.Get(username)
 
 		s.sessions.Set(string(c.SessionID()), user)
 		return nil, nil
@@ -243,11 +254,11 @@ func (s *Server) authUser(c ssh.ConnMetadata, password []byte) (*ssh.Permissions
 		return nil, nil
 	}
 	// check the user exists and has matching password
-	n := c.User()
+	n := username
 	user, found := s.users.Get(n)
 	if !found || user.Pass != string(password) {
 		s.Debugf("Login failed for user: %s", n)
-		return nil, errors.New("Invalid authentication for username: %s")
+		return nil, errors.New("invalid authentication for username: %s")
 	}
 	// insert the user session map
 	// TODO this should probably have a lock on it given the map isn't thread-safe

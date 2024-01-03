@@ -39,12 +39,12 @@ func newAuthCommand() *cobra.Command {
 					log.Fatal(err)
 				}
 			}
-			f, err := os.OpenFile(c, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			f, err := os.Create(c)
 			if err != nil {
 				log.Fatal(err)
 			}
-			data := []byte(authTokenInput)
-			if _, errWriteFile := f.Write(data); errWriteFile != nil {
+			// data := []byte(authTokenInput)
+			if _, errWriteFile := f.WriteString(authTokenInput); errWriteFile != nil {
 				log.Fatalf("Write credentials to file error %s", errWriteFile)
 			}
 			log.Printf("Write SNDP credentials at %s", c)
