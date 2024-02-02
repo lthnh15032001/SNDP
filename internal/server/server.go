@@ -167,12 +167,14 @@ func (s *Server) Start(host, port string) error {
 	return s.StartContext(context.Background(), host, port)
 }
 
-// StartContext is responsible for kicking off the http server,
+// StartContext is responsible for kicking off the http server & mysql server,
 // and can be closed by cancelling the provided context
 func (s *Server) StartContext(ctx context.Context, host, port string) error {
 	s.Infof("Fingerprint %s", s.fingerprint)
 	var err error
-	s.sc, _, err = store.GetOnce()
+	if s.config.WithDBAuth {
+		s.sc, _, err = store.GetOnce()
+	}
 	if err != nil {
 		return err
 	}

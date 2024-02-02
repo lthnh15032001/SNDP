@@ -1,4 +1,5 @@
 services:
+
   mysql:
     image: mysql
     container_name: mysql
@@ -9,21 +10,29 @@ services:
       MYSQL_ROOT_PASSWORD: "my-secret-pw"
       MYSQL_ROOT_HOST: "%"
       MYSQL_DATABASE: "iot"
-    volumes:
-      - db:/var/lib/mysql
-      - ./seeds/init.sql:/data/application/init.sql
+    # volumes:
+    #   - db:/var/lib/mysql
+    #   - ./seeds/init.sql:/data/application/init.sql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
+      
   keycloak:
-    image:  jboss/keycloak:16.0.0
+    image:  quay.io/keycloak/keycloak:latest
     restart: always # keep the server running
+    command: start-dev
     ports:
       - "8080:8080"
+      - "8443:8443"
     environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=mysql
+      - KC_DB_PASSWORD=my-secret-pw
+      - KC_DB_URL=jdbc:mysql://192.168.1.31:3306/keycloak
+      - KC_DB_USERNAME=root
+
       - DB_VENDOR=mysql
       - DB_USER=root
       - DB_ADDR=mysql

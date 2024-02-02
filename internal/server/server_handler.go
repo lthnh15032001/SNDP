@@ -167,38 +167,53 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 		//block
 		return tunnel.BindRemotes(ctx, serverInbound)
 	})
-	// add to db
-	ipAddr := req.Header.Get("X-Fromipaddress")
-	if ipAddr == "" {
-		ipAddr = req.RemoteAddr
-	}
-	uuidV4, _ := uuid.NewRandom()
+	if s.config.WithDBAuth {
+		fmt.Printf("db added %v", s.config.WithDBAuth)
+		// add to db
+		ipAddr := req.Header.Get("X-Fromipaddress")
+		if ipAddr == "" {
+			ipAddr = req.RemoteAddr
+		}
+		uuidV4, _ := uuid.NewRandom()
 
-	tunnelAgentModel := models.TunnelAgentModel{
-		ID:           uuidV4.String(),
-		Region:       "ap-southeast",
-		IP:           ipAddr,
-		Version:      c.Version,
-		TunnelOnline: id,
-		StartedAt:    time.Now(),
-		OS:           req.Header.Get("X-Runtime"),
-		Metadata:     fmt.Sprintf("%+v", c.Remotes),
-		Status:       1,
-		UserRemoteId: user.Name,
-	}
-	err = s.sc.AddTunnel(tunnelAgentModel)
-	err = eg.Wait()
-	if err != nil && !strings.HasSuffix(err.Error(), "EOF") {
-		l.Debugf("Closed connection (%s)", err)
+		tunnelAgentModel := models.TunnelAgentModel{
+			ID:           uuidV4.String(),
+			Region:       "ap-southeast",
+			IP:           ipAddr,
+			Version:      c.Version,
+			TunnelOnline: id,
+			StartedAt:    time.Now(),
+			OS:           req.Header.Get("X-Runtime"),
+			Metadata:     fmt.Sprintf("%+v", c.Remotes),
+			Status:       1,
+			UserRemoteId: user.Name,
+		}
+		s.sc.AddTunnel(tunnelAgentModel)
+
+		err = eg.Wait()
+		if err != nil && !strings.HasSuffix(err.Error(), "EOF") {
+			l.Debugf("Closed connection (%s)", err)
+		} else {
+			l.Debugf("Closed connection")
+		}
+
+		//  Change status when connection closed
+		err = s.sc.DeleteTunnel(uuidV4.String())
+
+		if err != nil {
+			l.Debugf("Updated failed when Closed connection ")
+		}
 	} else {
-		l.Debugf("Closed connection")
-	}
+		err = eg.Wait()
+		if err != nil && !strings.HasSuffix(err.Error(), "EOF") {
+			l.Debugf("Closed connection (%s)", err)
+		} else {
+			l.Debugf("Closed connection")
+		}
 
-	//  Change status when connection closed
-	err = s.sc.DeleteTunnel(uuidV4.String())
-
-	if err != nil {
-		l.Debugf("Updated failed when Closed connection ")
+		if err != nil {
+			l.Debugf("Updated failed when Closed connection ")
+		}
 	}
 
 }

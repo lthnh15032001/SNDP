@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -40,6 +41,7 @@ func AuthMiddleware(role string) gin.HandlerFunc {
 
 		config := config.GetConfig()
 		issuerUrl := config.GetString(constants.ENV_OIDC_ISSUER_URL)
+		fmt.Printf("issuerUrl %s", issuerUrl)
 		clientID := config.GetString(constants.ENV_OIDC_CLIENT_ID)
 		// serverSession := sessions.Default(c)
 		rawAccessToken := c.Request.Header.Get("Authorization")

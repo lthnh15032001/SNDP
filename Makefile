@@ -5,7 +5,7 @@ VERSION_PACKAGE=github.com/lthnh15032001/ngrok-impl/internal/version
 .PHONY: build
 build:
 	@echo Building from source....
-	@CGO_ENABLED=0 go build -o ./build/$(NAME) ./cmd
+	@CGO_ENABLED=1 go build -o ./build/$(NAME) ./cmd
 
 .PHONY: run
 run: build
